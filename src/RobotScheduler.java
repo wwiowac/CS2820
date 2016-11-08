@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class RobotScheduler {
+public class RobotScheduler implements EventConsumer {
     private LinkedList<Robot> availableRobots;
     private ArrayList<Robot> chargingRobots;
     private ArrayList<Robot> workingRobots;
@@ -10,6 +10,7 @@ public class RobotScheduler {
 
     RobotScheduler(Master m) {
         master = m;
+        availableRobots = new LinkedList<>();
         // Add 5 robots
         for (int i = 1; i <= 5; i++) {
             availableRobots.add(new Robot(i));
@@ -25,12 +26,14 @@ public class RobotScheduler {
         }
     }
 
+
     /**
      * Takes an order, and assigns it to the robot that is first in line
      *
      * @param s The shelf to fetch
      * @return Returns whether or not the order was accepted. It will be rejected if there are no available robots
      */
+    /* COMMENTED OUT IN MASTER BRANCH UNTIL A SHELF CLASS IS ADDED TO THE PROJECT
     public boolean fetch(Shelf s) {
         Robot r;
         try {
@@ -46,7 +49,7 @@ public class RobotScheduler {
         // r.addDirections();
 
         return true;
-    }
+    } */
 
     /**
      * Will actually "move" the robots every "tick"
