@@ -1,21 +1,31 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.*;
 
-public class RobotScheduler {
+public class RobotScheduler implements EventConsumer {
     private LinkedList<Robot> availableRobots;
     private ArrayList<Robot> chargingRobots;
     private ArrayList<Robot> workingRobots;
 
-    /**
-     * Default constructor
-     */
-    public RobotScheduler() {
+
+    Master master;
+
+    RobotScheduler(Master m) {
+        master = m;
+        availableRobots = new LinkedList<>();
         // Add 5 robots
         for (int i = 1; i <= 5; i++) {
             availableRobots.add(new Robot(i));
         }
     }
+
+    @Override
+    public void handleTaskEvent(Task task, Event event) {
+        switch (task.type) {
+            case DispatchAvailableRobotToLocation:
+                System.out.println("Time: " + master.currentTime.toString());
+                System.out.println("Sending a robot to [" + task.location[0].toString() + "," + task.location[1].toString() + "]");
+        }
+    }
+
 
     /**
      * Takes an order, and assigns it to the robot that is first in line
@@ -23,6 +33,7 @@ public class RobotScheduler {
      * @param s The shelf to fetch
      * @return Returns whether or not the order was accepted. It will be rejected if there are no available robots
      */
+    /* COMMENTED OUT IN MASTER BRANCH UNTIL A SHELF CLASS IS ADDED TO THE PROJECT
     public boolean fetch(Shelf s) {
         Robot r;
         try {
@@ -38,7 +49,7 @@ public class RobotScheduler {
         // r.addDirections();
 
         return true;
-    }
+    } */
 
     /**
      * Will actually "move" the robots every "tick"
@@ -52,4 +63,5 @@ public class RobotScheduler {
     // Need a way to detect if a robot has finished charging
 
     // Need a way to detect if a robot has reached its destination
+
 }
