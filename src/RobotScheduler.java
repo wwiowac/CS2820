@@ -1,19 +1,27 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class RobotScheduler {
     private LinkedList<Robot> availableRobots;
     private ArrayList<Robot> chargingRobots;
     private ArrayList<Robot> workingRobots;
 
-    /**
-     * Default constructor
-     */
-    public RobotScheduler() {
+
+    Master master;
+
+    RobotScheduler(Master m) {
+        master = m;
         // Add 5 robots
         for (int i = 1; i <= 5; i++) {
             availableRobots.add(new Robot(i));
+        }
+    }
+
+    @Override
+    public void handleTaskEvent(Task task, Event event) {
+        switch (task.type) {
+            case DispatchAvailableRobotToLocation:
+                System.out.println("Time: " + master.currentTime.toString());
+                System.out.println("Sending a robot to [" + task.location[0].toString() + "," + task.location[1].toString() + "]");
         }
     }
 
@@ -52,4 +60,5 @@ public class RobotScheduler {
     // Need a way to detect if a robot has finished charging
 
     // Need a way to detect if a robot has reached its destination
+
 }
