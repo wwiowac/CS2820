@@ -1,3 +1,5 @@
+import Inventory.MockShelf;
+
 import java.util.*;
 
 public class RobotScheduler implements EventConsumer {
@@ -33,8 +35,7 @@ public class RobotScheduler implements EventConsumer {
      * @param s The shelf to fetch
      * @return Returns whether or not the order was accepted. It will be rejected if there are no available robots
      */
-    /* COMMENTED OUT IN MASTER BRANCH UNTIL A SHELF CLASS IS ADDED TO THE PROJECT
-    public boolean fetch(Shelf s) {
+    public boolean fetch(MockShelf s) {
         Robot r;
         try {
             r = availableRobots.removeFirst();
@@ -49,7 +50,7 @@ public class RobotScheduler implements EventConsumer {
         // r.addDirections();
 
         return true;
-    } */
+    }
 
     /**
      * Will actually "move" the robots every "tick"
