@@ -1,3 +1,6 @@
+import Inventory.InventoryItem;
+import Inventory.InventoryManagement;
+
 import java.util.*;
 
 public class Master implements EventConsumer {
@@ -54,6 +57,23 @@ public class Master implements EventConsumer {
             Event e = se.event;
             e.doNextTask();
         }
+    }
+
+    public static void main(String[] args) {
+        Master master = new Master();
+
+        // Setup inventory
+        InventoryManagement inventory = new InventoryManagement();
+        inventory.addShelf(new Integer[] { 17, 24 });
+        InventoryItem[] items = {}; // = seed items
+        for (InventoryItem item : items) {
+            inventory.addItem(item);
+        }
+
+        // Seed Event queue
+        Event e1 = new Event(new Task(Task.TaskType.BeginItemRetrieval, new Integer[]{12,3}), master);
+        master.scheduleEvent(e1);
+        master.simulate();
     }
 
 }
