@@ -1,14 +1,19 @@
-public class Robot {
+public class Robot implements EventConsumer {
     // Cost per move that the robot makes. Adjust this based on the size of the floor
     private static final double MOVE_COST = 1.0;
+
+    private Master master;
+    private Floor floor;
 
     private int id;
     private double chargeLevel;
     private Direction direction;
 
-    public Robot(int id) {
+    public Robot(int id, Master m, Floor f) {
         this.id = id;
         this.chargeLevel = 100;
+        master = m;
+        floor = f;
     }
 
     public enum Direction {
@@ -16,6 +21,17 @@ public class Robot {
         East,
         South,
         West
+    }
+
+    @Override
+    public void handleTaskEvent(Task task, Event event) {
+        switch (task.type) {
+            case SpecificRobotToLocation:
+                master.printTime();
+                System.out.println("Robot " + Integer.toString(id) + " moving to [" + task.location[0].toString() + "," + task.location[1].toString() + "]");
+                move(task.location);
+                master.scheduleEvent(event, 1);
+        }
     }
 
     /**
@@ -43,10 +59,9 @@ public class Robot {
     /**
      * Advance the robot to its next step
      */
-    public void move() {
+    private void move(Integer[] newloc) {
         chargeLevel -= Robot.MOVE_COST;
-
-        // Robot will need to "move"
+        floor.setRobotPosition(this, newloc);
     }
 
     /**
