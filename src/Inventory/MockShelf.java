@@ -1,13 +1,23 @@
 package Inventory;
 
+import java.util.*;
+
 public class MockShelf {
 
-    private int shelfId;
+    private UUID shelfId;
+    private Integer[] location;
 
-    public MockShelf(int shelfId){
+    public MockShelf(UUID shelfId, Integer[] location){
         this.shelfId = shelfId;
+        this.location = location;
     }
-    public int getShelfId() {
+
+    public UUID getShelfId() {
         return shelfId;
     }
+
+    public Integer[] getLocation() {
+        return location;
+    }
+
 }

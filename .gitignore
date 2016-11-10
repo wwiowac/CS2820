@@ -15,3 +15,6 @@ hs_err_pid*
 *.iws
 /out/
 /.idea/
+
+.vscode/
+warehouse-project-a6.iml
