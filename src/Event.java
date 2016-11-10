@@ -12,7 +12,9 @@ public class Event {
 
     public void doNextTask() {
         KeyValuePair<Task, EventConsumer> tecpair = EventTicket.removeFirst();
-        tecpair.Value.handleTaskEvent(tecpair.Key, this);
+        if (tecpair.Value != null) {
+            tecpair.Value.handleTaskEvent(tecpair.Key, this);
+        }
     }
 
     public void addFirstTask(Task t, EventConsumer handler) {

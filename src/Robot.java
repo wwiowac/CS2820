@@ -28,8 +28,8 @@ public class Robot implements EventConsumer {
         switch (task.type) {
             case SpecificRobotToLocation:
                 master.printTime();
-                System.out.println("Robot " + Integer.toString(id) + " moving to [" + task.location[0].toString() + "," + task.location[1].toString() + "]");
                 move(task.location);
+                System.out.println("Robot " + Integer.toString(id) + " moved to [" + task.location[0].toString() + "," + task.location[1].toString() + "]");
                 master.scheduleEvent(event, 1);
         }
     }
