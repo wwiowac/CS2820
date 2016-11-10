@@ -1,3 +1,4 @@
+import Inventory.InventoryItem;
 
 public class Task {
 
@@ -6,11 +7,13 @@ public class Task {
         DispatchAvailableRobotToLocation,
         RaiseShelf,
         SpecificRobotToLocation,
-        RobotCharged
+        RobotCharged,
+        EventFinished
     }
 
     public TaskType type;
     public Integer[] location;
+    public String itemsku;
 
     Task(TaskType type) {
         this.type = type;
@@ -19,5 +22,10 @@ public class Task {
     Task(TaskType type, Integer[] location) {
         this.type = type;
         this.location = location;
+    }
+
+    Task(TaskType type, String itemsku) {
+        this.type = type;
+        this.itemsku = itemsku;
     }
 }

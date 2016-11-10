@@ -15,7 +15,12 @@ public class Event {
         tecpair.Value.handleTaskEvent(tecpair.Key, this);
     }
 
-    public void addTask(Task t, EventConsumer handler) {
+    public void addFirstTask(Task t, EventConsumer handler) {
+        KeyValuePair<Task, EventConsumer> eventhandler = new KeyValuePair<>(t, handler);
+        EventTicket.addFirst(eventhandler);
+    }
+
+    public void addLastTask(Task t, EventConsumer handler) {
         KeyValuePair<Task, EventConsumer> eventhandler = new KeyValuePair<>(t, handler);
         EventTicket.add(eventhandler);
     }
