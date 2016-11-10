@@ -1,10 +1,12 @@
 import Inventory.InventoryItem;
 import Inventory.InventoryManagement;
 
+import java.io.IOException;
 import java.util.*;
 
 public class Master implements EventConsumer {
 
+    Floor floor;
     RobotScheduler robotscheduler;
     InventoryManagement inventory;
     Integer currentTime;
@@ -13,7 +15,8 @@ public class Master implements EventConsumer {
     static InventoryItem dummyitem = new InventoryItem("4456", "toilet paper", 0.12);
 
     Master() {
-        robotscheduler = new RobotScheduler(this);
+        floor = new Floor(this);
+        robotscheduler = new RobotScheduler(this, floor);
         inventory = new InventoryManagement();
         currentTime = 0;
 
@@ -49,6 +52,7 @@ public class Master implements EventConsumer {
                 System.out.println("Time: " + this.currentTime.toString());
                 System.out.println("Beginning item retrieval");
                 Event spawnedevent = new Event(new Task(Task.TaskType.DispatchAvailableRobotToLocation, inventory.getItemShelf(inventory.getItembySku(task.itemsku)).getLocation()), robotscheduler);
+                spawnedevent.addLastTask(new Task(Task.TaskType.EventFinished), null);
                 scheduleEvent(spawnedevent);
         }
     }
@@ -70,7 +74,16 @@ public class Master implements EventConsumer {
             currentTime = se.time;
             Event e = se.event;
             e.doNextTask();
+            /*try {
+                System.in.read();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }*/
         }
+    }
+
+    public void printTime() {
+        System.out.println("Time: " + currentTime.toString());
     }
 
     public static void main(String[] args) {

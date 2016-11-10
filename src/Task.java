@@ -7,7 +7,8 @@ public class Task {
         DispatchAvailableRobotToLocation,
         RaiseShelf,
         SpecificRobotToLocation,
-        RobotCharged
+        RobotCharged,
+        EventFinished
     }
 
     public TaskType type;
