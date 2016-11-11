@@ -1,5 +1,3 @@
-import Inventory.InventoryItem;
-
 public class Task {
 
     public enum TaskType {

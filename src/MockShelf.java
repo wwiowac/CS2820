@@ -1,5 +1,3 @@
-package Inventory;
-
 import java.util.*;
 
 public class MockShelf {

@@ -1,6 +1,3 @@
-import Inventory.InventoryItem;
-import Inventory.InventoryManagement;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -51,7 +48,9 @@ public class Master implements EventConsumer {
             case BeginItemRetrieval:
                 System.out.println("Time: " + this.currentTime.toString());
                 System.out.println("Beginning item retrieval");
-                Event spawnedevent = new Event(new Task(Task.TaskType.DispatchAvailableRobotToLocation, inventory.getItemShelf(inventory.getItembySku(task.itemsku)).getLocation()), robotscheduler);
+                Event spawnedevent = new Event(new Task(Task.TaskType.DispatchAvailableRobotToLocation,
+                        inventory.getItemShelf(inventory.getItembySku(task.itemsku)).getLocation()),
+                        robotscheduler);
                 spawnedevent.addLastTask(new Task(Task.TaskType.EventFinished), null);
                 scheduleEvent(spawnedevent);
         }
