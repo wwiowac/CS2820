@@ -1,10 +1,9 @@
-
-
 import java.util.*;
 
 public class InventoryManagement {
 
     private ArrayList<MockShelf> shelves;
+    private HashMap<String, InventoryItem> skulookup;
     private HashMap<InventoryItem, MockShelf> currentInventory;
 
     /**
@@ -13,6 +12,7 @@ public class InventoryManagement {
     public InventoryManagement() {
         shelves = new ArrayList<>();
         currentInventory = new HashMap<>();
+        skulookup = new HashMap<>();
     }
 
     /**
@@ -33,12 +33,9 @@ public class InventoryManagement {
      * description: takes an item given as a parameter and selects a shelf for it to be placed on.
      */
     public void addItem(InventoryItem item) {
-        if(shelves.size() == 1){
-            addItem(item,shelves.get(0));
-        }else {
+            skulookup.put(item.getId(), item);
             int idx = new Random().nextInt(shelves.size());
             addItem(item, shelves.get(idx));
-        }
     }
 
     /**
@@ -66,6 +63,25 @@ public class InventoryManagement {
     public void generateOrder(InventoryItem item){
         //TODO:Figure out order process and implement inventory accordingly
     }
+
+
+    /**
+     *
+     * @param item - item to be found
+     * @return the shelf object the item is on
+     * description: takes an item object and finds the current shelf it is on and returns it.
+     */
+    public MockShelf getItemShelf(InventoryItem item) {
+            return currentInventory.get(item);
+    }
+
+    public InventoryItem getItembySku(String sku) {
+        return skulookup.get(sku);
+    }
+
+
+
+
 
 
 }

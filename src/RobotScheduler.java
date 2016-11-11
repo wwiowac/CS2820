@@ -1,5 +1,3 @@
-import Inventory.MockShelf;
-
 import java.util.*;
 import static java.lang.Math.abs;
 
