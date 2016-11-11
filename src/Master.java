@@ -1,33 +1,13 @@
-import Inventory.InventoryItem;
-import Inventory.InventoryManagement;
-
-import java.io.IOException;
 import java.util.*;
 
 public class Master implements EventConsumer {
 
-    Floor floor;
     RobotScheduler robotscheduler;
-    InventoryManagement inventory;
     Integer currentTime;
 
-    // Dummy item
-    static InventoryItem dummyitem = new InventoryItem("4456", "toilet paper", 0.12);
-
     Master() {
-        floor = new Floor(this);
-        robotscheduler = new RobotScheduler(this, floor);
-        inventory = new InventoryManagement();
+        robotscheduler = new RobotScheduler(this);
         currentTime = 0;
-
-        // Setup inventory
-        inventory.addShelf(new Integer[] { 17, 24 });
-        InventoryItem[] items = {}; // = seed items
-        for (InventoryItem item : items) {
-            inventory.addItem(item);
-        }
-
-        inventory.addItem(dummyitem);
     }
 
     private class scheduleOrdering implements Comparator<ScheduledEvent> {
@@ -51,8 +31,7 @@ public class Master implements EventConsumer {
             case BeginItemRetrieval:
                 System.out.println("Time: " + this.currentTime.toString());
                 System.out.println("Beginning item retrieval");
-                Event spawnedevent = new Event(new Task(Task.TaskType.DispatchAvailableRobotToLocation, inventory.getItemShelf(inventory.getItembySku(task.itemsku)).getLocation()), robotscheduler);
-                spawnedevent.addLastTask(new Task(Task.TaskType.EventFinished), null);
+                Event spawnedevent = new Event(new Task(Task.TaskType.DispatchAvailableRobotToLocation, task.location), robotscheduler);
                 scheduleEvent(spawnedevent);
         }
     }
@@ -74,23 +53,25 @@ public class Master implements EventConsumer {
             currentTime = se.time;
             Event e = se.event;
             e.doNextTask();
-            /*try {
-                System.in.read();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }*/
         }
-    }
-
-    public void printTime() {
-        System.out.println("Time: " + currentTime.toString());
     }
 
     public static void main(String[] args) {
         Master master = new Master();
 
+        // Setup inventory
+        InventoryManagement inventory = new InventoryManagement();
+
+        //create mockShelf to complete first test
+        inventory.addShelf(new Integer[] { 17, 24 });
+
+        //seeds the inventory with all items and each getting random quantity
+        for (InventoryItem item:InventoryList.catalog) {
+            inventory.addItem(item);
+        }
+
         // Seed Event queue
-        Event e1 = new Event(new Task(Task.TaskType.BeginItemRetrieval, dummyitem.getId()), master);
+        Event e1 = new Event(new Task(Task.TaskType.BeginItemRetrieval, new Integer[]{12,3}), master);
         master.scheduleEvent(e1);
         master.simulate();
     }
