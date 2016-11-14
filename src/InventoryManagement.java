@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.*;
 
 public class InventoryManagement {
@@ -22,7 +23,7 @@ public class InventoryManagement {
      *              all shelves.
      *
      */
-    public void addShelf(Integer[] location) {
+    public void addShelf(Point location) {
         MockShelf shelf = new MockShelf(UUID.randomUUID(), location);
         shelves.add(shelf);
     }

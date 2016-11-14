@@ -9,12 +9,13 @@ import java.util.HashMap;
  *
  */
 public class Floor {
-	
+
 	private Master master;
 	//warehouse dimensions
 	static final int warehouseWidth = 200;
 	static final int warehouseDepth = 100;
-	
+	private Item[][] grid = new Item[warehouseWidth][warehouseDepth];
+
 	//warehouse locations and names
 	final Point chargers = new Point(100,10);
 	final Point shippingDock = new Point(10,0);
@@ -26,12 +27,11 @@ public class Floor {
 	final Point highway2 = new Point(80,65);
 	final Point highway3 = new Point(175,65);
 	final Point highway4 = new Point(130,25);
-	
+
 	//lists of objects
 	List<ShelfArea> shelfAreas;
 	HashMap<Robot, Integer[]> robot_locs;
-	ArrayList<Robot> robots;
-	
+
     /**
      * Constructor
      * @param m (Master)
@@ -40,13 +40,11 @@ public class Floor {
 		master = m;
 		shelfAreas = new ArrayList<ShelfArea>();
 		robot_locs = new HashMap<>();
-		robots = new ArrayList<>();
 		shelfAreas.add(new ShelfArea(new Point(100,70),160));
 		shelfAreas.add(new ShelfArea(new Point(120,70),160));
 		shelfAreas.add(new ShelfArea(new Point(140,70),160));
-		seedRobots(5);
 	}
-	
+
 	/**
 	 * get methods for the various locations
 	 * @return Point objects
@@ -57,7 +55,7 @@ public class Floor {
 	public Point getReceivingDock() { return receivingDock; }
 	public Point getCharger() { return chargers; }
 	public Point getBelt() { return belt; }
-	
+
 	/**
 	 * Useful for product distribution on shelves.
 	 * @return Point object inside shelf area
@@ -67,20 +65,7 @@ public class Floor {
 		int s = r.nextInt(shelfAreas.size());
 		return shelfAreas.get(s).randomPoint();
 	}
-	
-	/**
-	 * Initializes Robot objects in the warehouse
-	 * @param robotcount
-	 */
-	public void seedRobots(int robotcount) {
-		for (int i=0; i<robotcount; i++) {
-			Robot robot = new Robot(i, master, this);
-			Integer[] postion = {10 + i, 0};
-			robot_locs.put(robot, postion);
-			robots.add(robot);
-		}
-	}
-	
+
 	/**
 	 * Path finder for robot
 	 * @param current
@@ -99,26 +84,41 @@ public class Floor {
 		}
 		else if(current == highway3) nextArea = highway4;
 		else if(current == highway4) nextArea = highway2;
-		
+
 		return nextArea;
 	}
-	
-	public Integer[] getRobotPosition(Robot robot) {
-		return robot_locs.get(robot);
+
+	/**
+	 * This will 'set' the point on the grid with the item.
+	 * The grid will be used for the visualizer
+	 * @param p Point to update
+	 * @param i Item to put in its location
+	 */
+	public void updateItemAt(Point p, Item i) {
+		grid[p.x][p.y] = i;
 	}
 
-	public void setRobotPosition(Robot robot, Integer[] position) {
-		robot_locs.put(robot, position);
+	public boolean isEmptyLocation(Point p) {
+		return (grid[p.x][p.y] == Item.EMPTY);
 	}
 
-	public ArrayList<Robot> getAllRobots() {
-		return robots;
+    /**
+     * All of the types of things that are represented on the floor
+     */
+	public enum Item {
+		EMPTY,
+		SHELF,
+		ROBOT,
+		PICKER,
+		BELT,
+		PACKAGE,
+		CHARGER
 	}
-	
+
 	//for testing purposes
 	public static void main(String[] args) {
-		
-		
+
+
 	}
 	/**
 	 * Mock ShelfArea class for testing
@@ -133,12 +133,12 @@ public class Floor {
 		   * @param width - how many squares wide shelf area is
 		   */
 		  ShelfArea(Point corner, int width) {
-		
+
 			this.corner = new Point(corner.x,corner.y);
 			this.width = width;
-			
+
 		       }
-		  
+
 		  Point randomPoint() {
 				Random R = new Random();
 				int column = R.nextInt(width);
