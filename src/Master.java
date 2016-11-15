@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.io.IOException;
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class Master implements EventConsumer {
         currentTime = 0;
 
         // Setup inventory
-        inventory.addShelf(new Integer[] { 17, 24 });
+        inventory.addShelf(new Point(17, 24));
         InventoryItem[] items = {}; // = seed items
         for (InventoryItem item : items) {
             inventory.addItem(item);

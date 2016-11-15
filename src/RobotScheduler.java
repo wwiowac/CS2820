@@ -1,11 +1,16 @@
+import java.awt.*;
 import java.util.*;
 import static java.lang.Math.abs;
 
+/**
+ * @author Jacob Roschen
+ *
+ * Class that controls the robots
+ */
 public class RobotScheduler implements EventConsumer {
-    private LinkedList<Robot> availableRobots;
-    private ArrayList<Robot> chargingRobots;
-    private ArrayList<Robot> workingRobots;
-
+    private LinkedList<Robot> availableRobots = new LinkedList<>();
+    private ArrayList<Robot> chargingRobots = new ArrayList<>();
+    private ArrayList<Robot> workingRobots = new ArrayList<>();
 
     Master master;
     Floor floor;
@@ -13,7 +18,19 @@ public class RobotScheduler implements EventConsumer {
     RobotScheduler(Master m, Floor f) {
         master = m;
         floor = f;
-        availableRobots = new LinkedList<>(floor.getAllRobots());
+        seedRobots(5);
+    }
+
+    /**
+     * Initializes Robot objects in the warehouse
+     * @param robotCount Number of robots to initialize
+     */
+    private void seedRobots(int robotCount) {
+        for (int i = 1; i <= robotCount; i++) {
+            Point position = new Point(9 + i, 0);
+            Robot robot = new Robot(i, master, position);
+            availableRobots.add(robot);
+        }
     }
 
     @Override
@@ -21,7 +38,7 @@ public class RobotScheduler implements EventConsumer {
         switch (task.type) {
             case DispatchAvailableRobotToLocation:
                 master.printTime();
-                System.out.println("Sending a robot to [" + task.location[0].toString() + "," + task.location[1].toString() + "]");
+                System.out.println("Sending a robot to [" + task.location.x + "," + task.location.y + "]");
                 Robot robot;
                 try {
                     robot = availableRobots.removeFirst();
@@ -32,7 +49,7 @@ public class RobotScheduler implements EventConsumer {
                     master.scheduleEvent(event, 1);
                     return;
                 }
-                ArrayList<Integer[]> route = mapRoute(floor.getRobotPosition(robot), task.location);
+                ArrayList<Point> route = mapRoute(robot.getLocation(), task.location);
                 if (route == null) {
                     System.out.println("Robot is already at destination");
                     master.scheduleEvent(event, 1);
@@ -46,38 +63,42 @@ public class RobotScheduler implements EventConsumer {
         }
     }
 
-    private ArrayList<Integer[]> mapRoute(Integer[] currentpos, Integer[] destination) {
-        ArrayList<Integer[]> route = new ArrayList<>();
-        Integer[] mappedpos = Arrays.copyOf(currentpos, currentpos.length);
-        while (nextLocation(mappedpos, destination) != null) {
-            mappedpos = nextLocation(mappedpos, destination);
-            route.add(mappedpos);
+    private ArrayList<Point> mapRoute(Point location, Point destination) {
+        ArrayList<Point> route = new ArrayList<>();
+        Point mappedPosition = (Point) location.clone();
+
+        while (nextLocation(mappedPosition, destination) != null) {
+            mappedPosition = nextLocation(mappedPosition, destination);
+            route.add(mappedPosition);
         }
+
         if (route.size() == 0) {
             return null;
         }
+
         return route;
     }
 
     /**
      * Quick and dirty helper method for mapRoute
-     * @param currentpos
-     * @param destination
+     * @param location Current location
+     * @param destination Destination location
      * @return
      */
-    private Integer[] nextLocation(Integer[] currentpos, Integer[] destination) {
-        int xdelta = destination[0] - currentpos[0];
-        int ydelta = destination[1] - currentpos[1];
-        if (xdelta == 0 && ydelta == 0) {
+    private Point nextLocation(Point location, Point destination) {
+        int deltaX = destination.x - location.x;
+        int deltaY = destination.y - location.y;
+        if (deltaX == 0 && deltaY == 0) {
             return null;
         }
-        Integer[] nextloc = Arrays.copyOf(currentpos, currentpos.length);
-        if (abs(xdelta) > abs(ydelta)) {
-            nextloc[0] += (xdelta > 0) ? 1 : -1;
+        Point nextLocation = (Point) location.clone();
+        if (abs(deltaX) > abs(deltaY)) {
+            nextLocation.x += (deltaX > 0) ? 1 : -1;
         } else {
-            nextloc[1] += (ydelta > 0) ? 1 : -1;
+            nextLocation.y += (deltaY > 0) ? 1 : -1;
         }
-        return nextloc;
+
+        return nextLocation;
     }
 
 
