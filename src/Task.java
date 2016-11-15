@@ -1,4 +1,4 @@
-import Inventory.InventoryItem;
+import java.awt.*;
 
 public class Task {
 
@@ -8,18 +8,19 @@ public class Task {
         RaiseShelf,
         SpecificRobotToLocation,
         RobotCharged,
-        EventFinished
+        EventFinished,
+        UpdateFloorPosition
     }
 
     public TaskType type;
-    public Integer[] location;
+    public Point location;
     public String itemsku;
 
     Task(TaskType type) {
         this.type = type;
     }
 
-    Task(TaskType type, Integer[] location) {
+    Task(TaskType type, Point location) {
         this.type = type;
         this.location = location;
     }
