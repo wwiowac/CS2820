@@ -1,8 +1,7 @@
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
-import java.util.HashMap;
+
 /**
  * 
  * @author Gabriel White
@@ -29,22 +28,35 @@ public class Floor {
 	
 	//lists of objects
 	List<ShelfArea> shelfAreas;
-	HashMap<Robot, Integer[]> robot_locs;
-	ArrayList<Robot> robots;
+	Map<String,Cell> warehousePoints;
 	
+	Random rand;
     /**
      * Constructor
      * @param m (Master)
      */
 	public Floor(Master m) {
+		rand = new Random();
+		int r = rand.nextInt();
 		master = m;
 		shelfAreas = new ArrayList<ShelfArea>();
-		robot_locs = new HashMap<>();
-		robots = new ArrayList<>();
-		shelfAreas.add(new ShelfArea(new Point(100,70),160));
-		shelfAreas.add(new ShelfArea(new Point(120,70),160));
-		shelfAreas.add(new ShelfArea(new Point(140,70),160));
-		seedRobots(5);
+		warehousePoints = new HashMap<String,Cell>();
+		shelfAreas.add(new ShelfArea(new Point(100,70),140,rand));
+		shelfAreas.add(new ShelfArea(new Point(120,70),140,rand));
+		shelfAreas.add(new ShelfArea(new Point(140,70),140,rand));
+		for(int i = 0; i < warehouseWidth;i++) {//generates the entire warehouse, represented by Cell objects.
+			for(int j = 0; j < warehouseDepth;j++) {
+				Point P = new Point(i,j);
+				Cell N = new Cell(i,j);
+				for(ShelfArea current: shelfAreas) {
+					if(current.hasWithin(P)) {
+						N = current.getCell(P);
+						assert N != null;
+					}
+				}
+				warehousePoints.put(P.toString(), N);
+			}
+		}
 	}
 	
 	/**
@@ -69,19 +81,6 @@ public class Floor {
 	}
 	
 	/**
-	 * Initializes Robot objects in the warehouse
-	 * @param robotcount
-	 */
-	public void seedRobots(int robotcount) {
-		for (int i=0; i<robotcount; i++) {
-			Robot robot = new Robot(i, master, this);
-			Integer[] postion = {10 + i, 0};
-			robot_locs.put(robot, postion);
-			robots.add(robot);
-		}
-	}
-	
-	/**
 	 * Path finder for robot
 	 * @param current
 	 * @return Point object of the next area for the robot to travel
@@ -92,7 +91,7 @@ public class Floor {
 		else if(current == chargers) nextArea = highway2;
 		else if(current == highway2) nextArea = pick;
 		else if(current == pick) nextArea = highway1;
-		else if(current == highway1) {
+		else if(current == highway1) {//chooses a random shelf area
 			Random r = new Random();
 			int s = r.nextInt(shelfAreas.size());
 			nextArea = shelfAreas.get(s).corner;
@@ -103,48 +102,42 @@ public class Floor {
 		return nextArea;
 	}
 	
-	public Integer[] getRobotPosition(Robot robot) {
-		return robot_locs.get(robot);
-	}
-
-	public void setRobotPosition(Robot robot, Integer[] position) {
-		robot_locs.put(robot, position);
-	}
-
-	public ArrayList<Robot> getAllRobots() {
-		return robots;
+	/**
+	 * 
+	 * @param P Point object of current location
+	 * @return true if the Cell is empty, false if occupied
+	 */
+	public boolean isEmptyLocation(Point P) {
+		if(getCell(P) == null) return true;
+		else return false;
 	}
 	
-	//for testing purposes
-	public static void main(String[] args) {
-		
-		
-	}
 	/**
-	 * Mock ShelfArea class for testing
-	 * @author Gabriel
-	 *
+	 * 
+	 * @param P
+	 * @return Cell at Point P
 	 */
-	public class ShelfArea {
-		  int width; // height will always be 2 -- just two shelves
-		  Point corner;  // lower left corner of shelf area
-		  /**
-		   * @param corner - lower left corner of shelf area
-		   * @param width - how many squares wide shelf area is
-		   */
-		  ShelfArea(Point corner, int width) {
-		
-			this.corner = new Point(corner.x,corner.y);
-			this.width = width;
-			
-		       }
-		  
-		  Point randomPoint() {
-				Random R = new Random();
-				int column = R.nextInt(width);
-				int row = R.nextInt(2);
-				Point P = new Point(corner.x+column,corner.y-row);
-				return P;
-			    }
-		  }
+	public Cell getCell(Point P) {
+		return warehousePoints.get(P.toString());  
+	}
+	
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @return getCell call
+	 */
+	public Cell getCell(int x, int y) {
+		return getCell(new Point(x,y));
+	}
+	
+	/**
+	 * 
+	 * @param P Point object to be updated
+	 * @param i Cell object location
+	 */
+	public void updateItemAt(Point P) {
+		warehousePoints.put(P.toString(), getCell(P));
+	}
+	
 }
