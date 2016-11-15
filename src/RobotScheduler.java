@@ -1,19 +1,35 @@
+import java.awt.*;
 import java.util.*;
+import static java.lang.Math.abs;
 
+/**
+ * @author Jacob Roschen
+ *
+ * Class that controls the robots
+ */
 public class RobotScheduler implements EventConsumer {
-    private LinkedList<Robot> availableRobots;
-    private ArrayList<Robot> chargingRobots;
-    private ArrayList<Robot> workingRobots;
-
+    private LinkedList<Robot> availableRobots = new LinkedList<>();
+    private ArrayList<Robot> chargingRobots = new ArrayList<>();
+    private ArrayList<Robot> workingRobots = new ArrayList<>();
 
     Master master;
+    Floor floor;
 
-    RobotScheduler(Master m) {
+    RobotScheduler(Master m, Floor f) {
         master = m;
-        availableRobots = new LinkedList<>();
-        // Add 5 robots
-        for (int i = 1; i <= 5; i++) {
-            availableRobots.add(new Robot(i));
+        floor = f;
+        seedRobots(5);
+    }
+
+    /**
+     * Initializes Robot objects in the warehouse
+     * @param robotCount Number of robots to initialize
+     */
+    private void seedRobots(int robotCount) {
+        for (int i = 1; i <= robotCount; i++) {
+            Point position = new Point(9 + i, 0);
+            Robot robot = new Robot(i, master, position);
+            availableRobots.add(robot);
         }
     }
 
@@ -21,9 +37,68 @@ public class RobotScheduler implements EventConsumer {
     public void handleTaskEvent(Task task, Event event) {
         switch (task.type) {
             case DispatchAvailableRobotToLocation:
-                System.out.println("Time: " + master.currentTime.toString());
-                System.out.println("Sending a robot to [" + task.location[0].toString() + "," + task.location[1].toString() + "]");
+                master.printTime();
+                System.out.println("Sending a robot to [" + task.location.x + "," + task.location.y + "]");
+                Robot robot;
+                try {
+                    robot = availableRobots.removeFirst();
+                } catch (NoSuchElementException ex) {
+                    // No available robots to fetch the order
+                    System.out.println("No robots available: deferring");
+                    event.addFirstTask(task, this);
+                    master.scheduleEvent(event, 1);
+                    return;
+                }
+                ArrayList<Point> route = mapRoute(robot.getLocation(), task.location);
+                if (route == null) {
+                    System.out.println("Robot is already at destination");
+                    master.scheduleEvent(event, 1);
+                    return;
+                }
+                // Add events to head of event ticket in reverse order (They end up in the same order)
+                for (int i=route.size()-1; i>=0; i--) {
+                    event.addFirstTask(new Task(Task.TaskType.SpecificRobotToLocation, route.get(i)), robot);
+                }
+                master.scheduleEvent(event, 1);
         }
+    }
+
+    private ArrayList<Point> mapRoute(Point location, Point destination) {
+        ArrayList<Point> route = new ArrayList<>();
+        Point mappedPosition = (Point) location.clone();
+
+        while (nextLocation(mappedPosition, destination) != null) {
+            mappedPosition = nextLocation(mappedPosition, destination);
+            route.add(mappedPosition);
+        }
+
+        if (route.size() == 0) {
+            return null;
+        }
+
+        return route;
+    }
+
+    /**
+     * Quick and dirty helper method for mapRoute
+     * @param location Current location
+     * @param destination Destination location
+     * @return
+     */
+    private Point nextLocation(Point location, Point destination) {
+        int deltaX = destination.x - location.x;
+        int deltaY = destination.y - location.y;
+        if (deltaX == 0 && deltaY == 0) {
+            return null;
+        }
+        Point nextLocation = (Point) location.clone();
+        if (abs(deltaX) > abs(deltaY)) {
+            nextLocation.x += (deltaX > 0) ? 1 : -1;
+        } else {
+            nextLocation.y += (deltaY > 0) ? 1 : -1;
+        }
+
+        return nextLocation;
     }
 
 
@@ -33,8 +108,7 @@ public class RobotScheduler implements EventConsumer {
      * @param s The shelf to fetch
      * @return Returns whether or not the order was accepted. It will be rejected if there are no available robots
      */
-    /* COMMENTED OUT IN MASTER BRANCH UNTIL A SHELF CLASS IS ADDED TO THE PROJECT
-    public boolean fetch(Shelf s) {
+    public boolean fetch(MockShelf s) {
         Robot r;
         try {
             r = availableRobots.removeFirst();
@@ -49,15 +123,6 @@ public class RobotScheduler implements EventConsumer {
         // r.addDirections();
 
         return true;
-    } */
-
-    /**
-     * Will actually "move" the robots every "tick"
-     */
-    public void update() {
-        for(Robot r: workingRobots) {
-            r.move();
-        }
     }
 
     // Need a way to detect if a robot has finished charging
