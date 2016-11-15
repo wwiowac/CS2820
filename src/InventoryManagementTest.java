@@ -1,5 +1,6 @@
 import org.junit.Test;
 
+import java.awt.*;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
@@ -27,7 +28,7 @@ public class InventoryManagementTest {
      */
     @Test
     public void getCurrentInventory() throws Exception {
-        inventory.addShelf(new Integer[] { 17, 24 });
+        inventory.addShelf(new Point(17, 24));
 
         //seeds the inventory with a random quantity
         for (InventoryItem item:InventoryList.catalog) {

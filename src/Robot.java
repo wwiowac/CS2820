@@ -1,19 +1,26 @@
+import java.awt.*;
+
+/**
+ * @author Jacob Roschen
+ *
+ * Wraps up the robot into a nice class
+ */
 public class Robot implements EventConsumer {
     // Cost per move that the robot makes. Adjust this based on the size of the floor
     private static final double MOVE_COST = 1.0;
 
     private Master master;
-    private Floor floor;
 
     private int id;
     private double chargeLevel;
     private Direction direction;
+    private Point location;
 
-    public Robot(int id, Master m, Floor f) {
+    public Robot(int id, Master m, Point location) {
         this.id = id;
         this.chargeLevel = 100;
         master = m;
-        floor = f;
+        this.location = location;
     }
 
     public enum Direction {
@@ -29,7 +36,7 @@ public class Robot implements EventConsumer {
             case SpecificRobotToLocation:
                 master.printTime();
                 move(task.location);
-                System.out.println("Robot " + Integer.toString(id) + " moved to [" + task.location[0].toString() + "," + task.location[1].toString() + "]");
+                System.out.println("Robot " + id + " moved to [" + task.location.x + "," + task.location.y + "]");
                 master.scheduleEvent(event, 1);
         }
     }
@@ -59,9 +66,11 @@ public class Robot implements EventConsumer {
     /**
      * Advance the robot to its next step
      */
-    private void move(Integer[] newloc) {
+    private void move(Point newloc) {
+
         chargeLevel -= Robot.MOVE_COST;
-        floor.setRobotPosition(this, newloc);
+        // Notify flood of location
+//        floor.setRobotPosition(this, newloc);
     }
 
     /**
@@ -71,5 +80,9 @@ public class Robot implements EventConsumer {
     public void turn(Direction d) {
         chargeLevel -= Robot.MOVE_COST;
         direction = d;
+    }
+
+    public Point getLocation() {
+        return location;
     }
 }
