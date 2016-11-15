@@ -15,6 +15,7 @@ public class Robot implements EventConsumer {
     private double chargeLevel;
     private Direction direction;
     private Point location;
+    private boolean isRaised;
 
     public Robot(int id, Master m, Point location) {
         this.id = id;
@@ -38,6 +39,12 @@ public class Robot implements EventConsumer {
                 move(task.location);
                 System.out.println("Robot " + id + " moved to [" + task.location.x + "," + task.location.y + "]");
                 master.scheduleEvent(event, 1);
+                break;
+            case RaiseShelf:
+                System.out.println("Robot " + id + " raising shelf");
+                raise();
+                master.scheduleEvent(event, 1);
+                break;
         }
     }
 
@@ -45,6 +52,7 @@ public class Robot implements EventConsumer {
      * Picks the shelf up
      */
     private void raise() {
+        isRaised = true;
         chargeLevel -= Robot.MOVE_COST;
     }
 
@@ -69,6 +77,7 @@ public class Robot implements EventConsumer {
     private void move(Point newloc) {
 
         chargeLevel -= Robot.MOVE_COST;
+        this.location = newloc;
         // Notify flood of location
 //        floor.setRobotPosition(this, newloc);
     }

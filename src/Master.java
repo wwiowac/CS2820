@@ -76,7 +76,7 @@ public class Master implements EventConsumer {
             case BeginItemRetrieval:
                 System.out.println("Time: " + this.currentTime.toString());
                 System.out.println("Beginning item retrieval");
-                Event spawnedevent = new Event(new Task(Task.TaskType.DispatchAvailableRobotToLocation,
+                Event spawnedevent = new Event(new Task(Task.TaskType.AvailableRobotRetrieveFromLocation,
                         inventory.getItemShelf(inventory.getItembySku(task.itemsku)).getLocation()),
                         robotscheduler);
                 spawnedevent.addLastTask(new Task(Task.TaskType.EventFinished), null);

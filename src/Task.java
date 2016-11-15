@@ -4,8 +4,9 @@ public class Task {
 
     public enum TaskType {
         BeginItemRetrieval,
-        DispatchAvailableRobotToLocation,
+        AvailableRobotRetrieveFromLocation,
         RaiseShelf,
+        SpecificRobotPlotPath,
         SpecificRobotToLocation,
         RobotCharged,
         EventFinished,
@@ -15,6 +16,7 @@ public class Task {
     public TaskType type;
     public Point location;
     public String itemsku;
+    public Robot robot;
 
     Task(TaskType type) {
         this.type = type;
@@ -28,5 +30,11 @@ public class Task {
     Task(TaskType type, String itemsku) {
         this.type = type;
         this.itemsku = itemsku;
+    }
+
+    Task(TaskType type, Robot robot, Point location) {
+        this.type = type;
+        this.robot = robot;
+        this.location = location;
     }
 }

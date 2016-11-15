@@ -36,7 +36,7 @@ public class RobotScheduler implements EventConsumer {
     @Override
     public void handleTaskEvent(Task task, Event event) {
         switch (task.type) {
-            case DispatchAvailableRobotToLocation:
+            case AvailableRobotRetrieveFromLocation:
                 master.printTime();
                 System.out.println("Sending a robot to [" + task.location.x + "," + task.location.y + "]");
                 Robot robot;
@@ -49,7 +49,14 @@ public class RobotScheduler implements EventConsumer {
                     master.scheduleEvent(event, 1);
                     return;
                 }
-                ArrayList<Point> route = mapRoute(robot.getLocation(), task.location);
+                // First go get the item, then return to the picker (Reverse order)
+                event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, floor.pick), this);
+                event.addFirstTask(new Task(Task.TaskType.RaiseShelf), robot);
+                event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, task.location), this);
+                master.scheduleEvent(event);
+                break;
+            case SpecificRobotPlotPath:
+                ArrayList<Point> route = mapRoute(task.robot.getLocation(), task.location);
                 if (route == null) {
                     System.out.println("Robot is already at destination");
                     master.scheduleEvent(event, 1);
@@ -57,9 +64,10 @@ public class RobotScheduler implements EventConsumer {
                 }
                 // Add events to head of event ticket in reverse order (They end up in the same order)
                 for (int i=route.size()-1; i>=0; i--) {
-                    event.addFirstTask(new Task(Task.TaskType.SpecificRobotToLocation, route.get(i)), robot);
+                    event.addFirstTask(new Task(Task.TaskType.SpecificRobotToLocation, route.get(i)), task.robot);
                 }
                 master.scheduleEvent(event, 1);
+                break;
         }
     }
 
