@@ -10,10 +10,11 @@ import java.util.*;
 public class Master implements EventConsumer {
 
     Floor floor;
+    Belt belt;
     RobotScheduler robotscheduler;
     InventoryManagement inventory;
     Integer currentTime;
-
+    
     private PriorityQueue<ScheduledEvent> EventQueue;
 
     // Dummy item
@@ -26,6 +27,7 @@ public class Master implements EventConsumer {
     Master() {
         EventQueue = new PriorityQueue<>(new scheduleOrdering());
         floor = new Floor(this);
+        belt = new Belt(this, floor);
         robotscheduler = new RobotScheduler(this, floor);
         inventory = new InventoryManagement();
         currentTime = 0;

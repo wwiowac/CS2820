@@ -1,63 +1,55 @@
-/*
-*@author Jacob Guth
-*
-* Rough draft of Belt.java 
-*
-* Updated 11/16/2106
-*
-* TODO: implement EventConsumerInterface
-*/
+/**
+ *@author Jacob Guth
+ *
+ * Updated 11/16/2106
+ *
+ * TODO: Implement updateStatus() that communicates to the Floor the content
+ *       of the Belt 
+ */
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.awt.*;
 
-public class Belt {
-
+public class Belt implements EventConsumer{
+    
+    private Master master;
     private Floor floor;
     
     //picker and packer locations
     private final Point begin;	
     private final Point end;			
 
-    private Integer currentTime;
-
     private final Integer BELT_LENGTH;
     private final Integer BELT_WIDTH;
     private final Integer NUM_CELLS;
 
-    //Maps each beltCell id to its object
-    private HashMap<String, BeltCell> cells;
-    //Maps the ID of each package on the belt to its object
-    private HashMap<String, Package> packages;
-    //Maps each package on the belt to the beltCell it occupies
-    private HashMap<String, BeltCell> packageCells;
-    //Maps each index on the belt to its point location
-    private HashMap<Integer, Point> indexLocations;
+    
+    private HashMap<String, BeltCell> cells;    //Maps each beltCell id to its object
+    private HashMap<String, Package> packages;  //Maps the ID of each package on the belt to its object  
+    private HashMap<String, BeltCell> packageCells; //Maps each package on the belt to the beltCell it occupies
+    private HashMap<Integer, Point> indexLocations; //Maps each index on the belt to its point location
     
 
     //booleans controller for belt movement
     private boolean canMove;
 
-    /*
-    * constructor -  initializes a belt with a designated Floor layout
-    * 
-    */
-    public Belt(Floor floor){
-
+    /**
+     * @constructor -  initializes a belt with a designated Master and Floor 
+     */
+    public Belt(Master master, Floor floor){
+        
+        this.master = master;
         this.floor = floor;
         
-        //
+        //Begin and end points of the belt as specified in FloorPlan.png
         this.begin = new Point(0,100);
-        this.end = new Point(100,0);
-
-        currentTime = 0;
+        this.end = new Point(0,0);
+        
         canMove = true;
 
-        //Belt length depends on begin and end point. Belt width set to 20 (as shown in FloorPlan.png), and number of cells set to 50
+        //Belt length depends on begin and end point. Belt width set to 20 as shown in FloorPlan.png, number of cells set to 50
         BELT_LENGTH = (int) Math.abs(end.getY() - begin.getY());
         BELT_WIDTH = 20;
         NUM_CELLS = 50;
-
 
         cells = new HashMap<>();
         packages = new HashMap<>();
@@ -66,33 +58,50 @@ public class Belt {
         initializeBelt();
     }
 
-    /*
-    * description: if the belt can move at currentTime, update the locations of each cell in the belt
-    */
+    /**
+     * Increments the location of each beltCell on the belt if the belt can move
+     */
     private void move(){
         if(canMove){
-            updateLocations();
-            currentTime++;
-        }	
+            for(BeltCell beltCell : cells.values() ){
+                beltCell.incrementIndex();
+            }
+        }   
+    }
+    /**
+     * @description: Queues 1 belt movement in master  
+     * @param task
+     * @param event 
+     */
+    @Override
+    public void handleTaskEvent(Task task, Event event) {
+        switch (task.type) {
+            case MoveBelt:
+                move();
+                Event spawnedEvent = new Event(new Task(Task.TaskType.MoveBelt), this);
+                master.scheduleEvent(spawnedEvent,1);       
+        }
     }
 
-    /*
-    * description: starts/stops belt movement
-    */
+    /**
+     * @description: starts belt movement
+     */
     public void resume(){
         canMove = true;
     }
-
+    /**
+     * @description: stops belt movement
+     */
     public void stop(){
         canMove = false;
     }
 
 
-    /*
-    *@param inventoryPackage: a Package of InventoryItems
-    *
-    * description: adds a Package to the specified beltCell on the belt
-    */
+    /**
+     * Adds a Package to the specified beltCell on the belt
+     * @param inventoryPackage: a Package of InventoryItems
+     * @param cell_id: String ID of the beltCell to be added to 
+     */
     public void addPackage(Package inventoryPackage, String cell_id){
         String packageID = inventoryPackage.getID();
         
@@ -101,11 +110,11 @@ public class Belt {
         packageCells.put(packageID, cells.get(cell_id));
     }
     
-    /*
-    * @param inventoryPackage: a Package of InventoryItems
-    * 
-    * description: removes and returns the Package specified by packageID from the belt
-    */
+    /**
+     * Removes and returns the Package specified by packageID from the belt
+     * @param packageID: a Package of InventoryItems
+     * @return: package identified by packageID to that was removed
+     */
     public Package removePackage(String packageID){
 
         packages.remove(packageID);
@@ -114,20 +123,10 @@ public class Belt {
         return packageCells.get(packageID).removePackage();
     }
 
-
-    /*
-    * @param id: a cell id
-    * @return: Cell object associate with @param id
-    */
-    public BeltCell getCell(String id){
-        return cells.get(id);
-    }
-
-
-    /*
-    *@param packageID: string ID of a package 
-    *@return: Point where @param inventoryPackage resides
-    */
+    /**
+     * @param packageID: string ID of a package 
+     * @return: Point where @param inventoryPackage resides
+     */
     public Point getPackageLocation(String packageID){
         if(!packageCells.containsKey(packageID)){
             System.out.println("Package "+packageID+"not found on the belt");
@@ -137,32 +136,21 @@ public class Belt {
         }
     }
 
-
-    /*
-    * description: updates the current status of the Belt to the Floor
-    *
-    * NOTE: further implementation I believe will require implementation of an updateStatus in
-    * Floor.java
-    *
-    */
+    /**
+     * Updates the current status of the Belt to the Floor
+     *
+     * NOTE: further implementation I believe will require implementation of an updateStatus in
+     * Floor.java
+     */
     public void updateStatus(){
     }
 
-    /*
-    *description: increments the location of each beltCell on the belt
-    */
-    private void updateLocations(){
-        for(BeltCell beltCell : cells.values() ){
-            beltCell.incrementIndex();
-        }
-    }
-
-
-    /*
-    * description: This method will initialize the belt separated by beltCells. It will also initialize  
-    * indexLocations representing the location of each index. Will complete once 
-    * we decide on the length of the belt, the number of cells we want, etc. 
-    */
+    
+    /**
+     * @description: This method will initialize the belt separated by beltCells. It will also initialize  
+     *  indexLocations representing the location of each index. Will complete once 
+     *  we decide on the length of the belt, the number of cells we want, etc. 
+     */
     private void initializeBelt(){
         
         int cellHeight = BELT_LENGTH/NUM_CELLS;
@@ -181,11 +169,11 @@ public class Belt {
         }
     }
 
-    /*
-    *Belt is comprised of beltCells, each with an index indicating its location on the belt and
-    *an id. 
+    /**
+    * Belt is comprised of beltCells, each with an index indicating its location on the belt and
+    * an id. 
     *
-    * description: class Cell has methods that identify and locate the packages they are occupied with
+    * @description: class Cell has methods that identify and locate the packages they are occupied with
     */
     private class BeltCell {
         
@@ -201,16 +189,16 @@ public class Belt {
 
         private Package inventoryPackage;
 
-        /*
-        * Constructor: initializes a cell with a designated height, initial index, initial location, and ID
-        *
-        */
+        /**
+         * @constructor: initializes a BeltCell with a designated height, initial index, initial location, and ID
+         *
+         */
         public BeltCell(int height, int index, Point location, String ID){
             
             this.location = location;
             this.index = index;
-            this.height = height;
             this.ID = ID;
+            this.height = height;
             this.width = BELT_WIDTH;
             this.inventoryPackage = null;
             occupied = false;
@@ -231,17 +219,18 @@ public class Belt {
         public int getHeight(){
             return height;
         }
-        /*
-        * @param package: Package to be added to this Cell
-        */
+        
+        /**
+         * @param inventoryPackage: Package to be added to this Cell
+         */
         public void addPackage(Package inventoryPackage){
             this.inventoryPackage = inventoryPackage;
             occupied = true;
         }
-
-        /*
-        * description: removes and returns the package from this cell
-        */
+        
+        /**
+         * @return: Package that was removed from this beltCell
+         */
         public Package removePackage(){
             Package temp = inventoryPackage;
             inventoryPackage = null;
@@ -253,9 +242,9 @@ public class Belt {
             return occupied;
         }
 
-        /*
-        * @return: returns the package occupying this cell, if there is one; Prints  a message otherwise
-        */
+        /**
+         * @return: The package occupying this cell, if there is one; Prints  a message and returns null otherwise
+         */
         public Package getPackage(){
             try{
                 return inventoryPackage;
@@ -264,10 +253,10 @@ public class Belt {
             }
             return null;
         }
-        /*
-        * description: increment this cell's index by one; if it's at the end of the belt, move it to
-        * the beginning
-        */
+        /**
+         * Increment this BeltCells index by one; if it's at the end of the belt, move it to
+         * the beginning
+         */
         public void incrementIndex(){
             if(index == NUM_CELLS -1){
                 index = 0;
@@ -277,9 +266,9 @@ public class Belt {
             updateLocation();
         }
 
-         /*
-         * description: updates the location of this cell
-         */
+         /**
+          * Updates the location of this cell
+          */
         public void updateLocation(){
             location = indexLocations.get(index);  
         }
