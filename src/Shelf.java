@@ -8,10 +8,12 @@ public class Shelf {
 
     private UUID shelfId;
     private Point location;
+    private boolean isAvailable;
 
     public Shelf(UUID shelfId, Point location){
         this.shelfId = shelfId;
         this.location = location;
+        this.isAvailable = true;
     }
 
     public UUID getShelfId() {
@@ -26,4 +28,25 @@ public class Shelf {
         this.location = location;
     }
 
+    /**
+     * Get if the shelf is being moved
+     *
+     * @author Jacob Roschen
+     *
+     * @return true if the shelf is not being moved
+     */
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    /**
+     * Set if the shelf is being moved
+     *
+     * @author Jacob Roschen
+     *
+     * @param available
+     */
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
 }

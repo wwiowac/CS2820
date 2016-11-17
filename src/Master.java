@@ -22,7 +22,7 @@ public class Master implements EventConsumer {
     private PriorityQueue<ScheduledEvent> EventQueue;
 
     // Dummy item
-    static InventoryItem dummyitem = new InventoryItem("4456", "toilet paper", 0.12);
+    static ArrayList<InventoryItem> inventoryItems = new ArrayList<>();
 
     /**
      * Setup the simulation. This should only load thing that will be used in every simulation.
@@ -39,9 +39,10 @@ public class Master implements EventConsumer {
 
         /// Temporary inventory setup TODO: Remove this
         // Setup inventory
-        InventoryItem[] items = {dummyitem}; // = seed items
-        for (InventoryItem item : items) {
+        for (int i = 0; i < 5; i++) {
+            InventoryItem item = new InventoryItem(""+ i, i +" toilet paper", i);
             inventory.addItem(item);
+            inventoryItems.add(item);
         }
     }
 
@@ -80,11 +81,18 @@ public class Master implements EventConsumer {
             case BeginItemRetrieval:
                 System.out.println("Time: " + this.currentTime.toString());
                 System.out.println("Beginning item retrieval");
-                Event spawnedevent = new Event(new Task(Task.TaskType.AvailableRobotRetrieveFromLocation,
-                        inventory.getItemShelf(inventory.getItembySku(task.itemsku)).getLocation()),
-                        robotscheduler);
-                spawnedevent.addLastTask(new Task(Task.TaskType.EventFinished), null);
-                scheduleEvent(spawnedevent);
+
+                Shelf s = inventory.getItemShelf(inventory.getItembySku(task.itemsku));
+                if(!s.isAvailable()) {
+                    System.out.println("Item could not be retrieved: Shelf in use.");
+                    event.addFirstTask(task, this);
+                    scheduleEvent(event, 1);
+                } else {
+                    s.setAvailable(false);
+                    Event spawnedevent = new Event(new Task(Task.TaskType.AvailableRobotRetrieveFromLocation, s.getLocation()), robotscheduler);
+                    spawnedevent.addLastTask(new Task(Task.TaskType.EventFinished), null);
+                    scheduleEvent(spawnedevent);
+                }
                 break;
         }
     }
@@ -127,12 +135,13 @@ public class Master implements EventConsumer {
             // Repaint
             visualizer.repaint();
             try {
-                sleep(500);
+                sleep(15);
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
 
         }
+        System.out.println("Done!");
     }
 
     /**
@@ -151,8 +160,11 @@ public class Master implements EventConsumer {
         Master master = new Master();
 
         // Seed Event queue
-        Event e1 = new Event(new Task(Task.TaskType.BeginItemRetrieval, dummyitem.getId()), master);
-        master.scheduleEvent(e1);
+        for (InventoryItem item : inventoryItems) {
+            Event e = new Event(new Task(Task.TaskType.BeginItemRetrieval, item.getId()), master);
+            master.scheduleEvent(e);
+        }
+
         master.simulate();
     }
 

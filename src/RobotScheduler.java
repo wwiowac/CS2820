@@ -1,6 +1,5 @@
 import java.awt.*;
 import java.util.*;
-import static java.lang.Math.abs;
 
 /**
  * @author Jacob Roschen
@@ -11,6 +10,9 @@ public class RobotScheduler implements EventConsumer {
     private LinkedList<Robot> availableRobots = new LinkedList<>();
     private ArrayList<Robot> chargingRobots = new ArrayList<>();
     private ArrayList<Robot> workingRobots = new ArrayList<>();
+    // Used for path finding
+    PriorityQueue<Cell> openCells;
+    boolean closedCells[][];
 
     Master master;
     Floor floor;
@@ -25,6 +27,8 @@ public class RobotScheduler implements EventConsumer {
 
     /**
      * Initializes Robot objects in the warehouse
+     * @author Jacob Roschen
+     *
      * @param robotCount Number of robots to initialize
      */
     private void seedRobots(int robotCount) {
@@ -35,6 +39,15 @@ public class RobotScheduler implements EventConsumer {
         }
     }
 
+    /**
+     * Handles the events 'AvailableRobotRetrieveFromLocation', 'SpecificRobotPlotPath', and 'EndItemRetrieval'
+     *
+     * @author Jacob Roschen
+     * @author Wes Weirather
+     *
+     * @param task
+     * @param event
+     */
     @Override
     public void handleTaskEvent(Task task, Event event) {
         switch (task.type) {
@@ -51,16 +64,22 @@ public class RobotScheduler implements EventConsumer {
                     master.scheduleEvent(event, 1);
                     return;
                 }
-                // First go get the item, then return to the picker (Reverse order)
+
+                // First go get the item, return to the picker, return the shelf, then finally go back home (Reverse order)
+                event.addFirstTask(new Task(Task.TaskType.EndItemRetrieval, robot, null), this);
+                event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, robot.getLocation()), this);
+                event.addFirstTask(new Task(Task.TaskType.LowerShelf), robot);
+                event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, task.location), this); // Go back to the shelf area
+                // TODO: Do something with the picker, but most of the above will probably  be moved into other areas
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, floor.pick), this);
                 event.addFirstTask(new Task(Task.TaskType.RaiseShelf), robot);
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, task.location), this);
                 master.scheduleEvent(event);
                 break;
             case SpecificRobotPlotPath:
-                ArrayList<Point> route = mapRoute(task.robot.getLocation(), task.location);
+                ArrayList<Point> route = findPath(task.robot.getLocation(), task.location, task.robot.hasShelf());
                 if (route == null) {
-                    System.out.println("Robot is already at destination");
+                    System.out.println("Robot is already at destination or a path cannot be determined");
                     master.scheduleEvent(event, 1);
                     return;
                 }
@@ -70,73 +89,127 @@ public class RobotScheduler implements EventConsumer {
                 }
                 master.scheduleEvent(event, 1);
                 break;
+            case EndItemRetrieval:
+                // After the robot has been returned home, let it do other work
+                availableRobots.add(task.robot);
+                workingRobots.remove(task.robot);
+                master.scheduleEvent(event, 1);
+                break;
         }
-    }
-
-    private ArrayList<Point> mapRoute(Point location, Point destination) {
-        ArrayList<Point> route = new ArrayList<>();
-        Point mappedPosition = (Point) location.clone();
-
-        while (nextLocation(mappedPosition, destination) != null) {
-            mappedPosition = nextLocation(mappedPosition, destination);
-            route.add(mappedPosition);
-        }
-
-        if (route.size() == 0) {
-            return null;
-        }
-
-        return route;
     }
 
     /**
-     * Quick and dirty helper method for mapRoute
-     * @param location Current location
-     * @param destination Destination location
+     * Checks to see if the robot can move to the specified location. Is a helper method for checkAndUpdateCost()
+     * @author Jacob Roschen
+     *
+     * @param c The cell to check if one can move to
+     * @param hasShelf Where you can move is determined by if the robot has a shelf
      * @return
      */
-    private Point nextLocation(Point location, Point destination) {
-        int deltaX = destination.x - location.x;
-        int deltaY = destination.y - location.y;
-        if (deltaX == 0 && deltaY == 0) {
-            return null;
-        }
-        Point nextLocation = (Point) location.clone();
-        if (abs(deltaX) > abs(deltaY)) {
-            nextLocation.x += (deltaX > 0) ? 1 : -1;
-        } else {
-            nextLocation.y += (deltaY > 0) ? 1 : -1;
+    private boolean canMove(Cell c, boolean hasShelf) {
+        if (c.type == Cell.Type.ROBOT ||
+                c.type == Cell.Type.EMPTY ||
+                c.type == Cell.Type.ROBOTLOWEREDSHELF ||
+                c.type == Cell.Type.ROBOTRAISEDSHELF ||
+                c.type == Cell.Type.HOME ||
+                (c.type == Cell.Type.SHELF && !hasShelf)) {
+            return true;
         }
 
-        return nextLocation;
+        return false;
     }
-
 
     /**
-     * Takes an order, and assigns it to the robot that is first in line
+     * Calculates the cost of the move from the current cell to the next one. Is a helper method for findPath()
+     * @author Jacob Roschen
      *
-     * @param s The shelf to fetch
-     * @return Returns whether or not the order was accepted. It will be rejected if there are no available robots
+     * @param current The current cell
+     * @param next The cell you want to move to
+     * @param hasShelf Does the robot have a shelf?
      */
-    public boolean fetch(Shelf s) {
-        Robot r;
-        try {
-            r = availableRobots.removeFirst();
-        } catch (NoSuchElementException ex) {
-            // No available robots to fetch the order
-            return false;
+    private void checkAndUpdateCost(Cell current, Cell next, boolean hasShelf) {
+        if (!canMove(next, hasShelf) || closedCells[next.x][next.y]) return;
+        int nextFinalCost = next.heuristicCost + current.finalCost + 1;
+
+        boolean inOpen = openCells.contains(next);
+        if (!inOpen || nextFinalCost < next.finalCost) {
+            next.finalCost = nextFinalCost;
+            next.parent = current;
+            if (!inOpen) openCells.add(next);
         }
-
-        workingRobots.add(r);
-
-        // Give the robot directions
-        // r.addDirections();
-
-        return true;
     }
 
-    // Need a way to detect if a robot has finished charging
+    /**
+     * Finds a path from the start Point to the end Point using the A* algorithm
+     *
+     * @param start Starting Point
+     * @param end Ending Point
+     * @param hasShelf Does the robot currently have a shelf?
+     * @return An ArrayList of the coordinates that the robot needs to traverse
+     */
+    private ArrayList<Point> findPath(Point start, Point end, boolean hasShelf) {
+        ArrayList<Point> path = new ArrayList<>();
 
-    // Need a way to detect if a robot has reached its destination
+        Cell[][] grid = floor.getGrid();
+        closedCells = new boolean[grid.length][grid[0].length];
+        openCells = new PriorityQueue<>((Object o1, Object o2) -> {
+            Cell c1 = (Cell) o1;
+            Cell c2 = (Cell) o2;
 
+            return c1.finalCost < c2.finalCost ? -1 :
+                    c1.finalCost > c2.finalCost ? 1 : 0;
+        });
+
+        for (int i = 0; i < grid.length; ++i) {
+            for (int j = 0; j < grid[0].length; ++j) {
+                grid[i][j].finalCost = 0;
+                grid[i][j].parent = null;
+                grid[i][j].heuristicCost = Math.abs(i - end.x) + Math.abs(j - end.y);
+            }
+        }
+
+        openCells.add(grid[start.x][start.y]);
+
+        Cell curLoc;
+        while ((curLoc = openCells.poll()) != null) {
+            closedCells[curLoc.x][curLoc.y] = true;
+
+            if (curLoc.equals(grid[end.x][end.y])) {
+                break;
+            }
+
+            Cell t;
+            Point[] neighbors = {
+                    new Point(curLoc.x - 1, curLoc.y),
+                    new Point(curLoc.x, curLoc.y - 1),
+                    new Point(curLoc.x, curLoc.y + 1),
+                    new Point(curLoc.x + 1, curLoc.y)
+            };
+
+            for (Point neighbor : neighbors) {
+                if (neighbor.x < 0 || neighbor.y < 0 || neighbor.y >= grid[0].length || neighbor.x >= grid.length)
+                    continue;
+
+                t = grid[neighbor.x][neighbor.y];
+                checkAndUpdateCost(curLoc, t, hasShelf);
+            }
+        }
+
+
+        if (closedCells[end.x][end.y]) {
+            //Trace back the path
+            Cell current = grid[end.x][end.y];
+            path.add(current);
+            while (current.parent != null) {
+                current = current.parent;
+                path.add(0, current);
+            }
+            // The current location is at the front of the list, remove it
+            path.remove(0);
+        } else {
+            return null;
+        }
+
+        return path;
+    }
 }
