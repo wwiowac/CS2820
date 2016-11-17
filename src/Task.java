@@ -16,7 +16,8 @@ public class Task {
         SpecificRobotToLocation,
         RobotCharged,
         EventFinished,
-        UpdateFloorPosition
+        UpdateFloorPosition,
+        MoveBelt
     }
 
     public TaskType type;
