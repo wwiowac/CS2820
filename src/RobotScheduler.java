@@ -14,10 +14,12 @@ public class RobotScheduler implements EventConsumer {
 
     Master master;
     Floor floor;
+    InventoryManagement inventory;
 
-    RobotScheduler(Master m, Floor f) {
+    RobotScheduler(Master m, Floor f, InventoryManagement i) {
         master = m;
         floor = f;
+        inventory = i;
         seedRobots(5);
     }
 
@@ -28,7 +30,7 @@ public class RobotScheduler implements EventConsumer {
     private void seedRobots(int robotCount) {
         for (int i = 1; i <= robotCount; i++) {
             Point position = new Point(9 + i, 0);
-            Robot robot = new Robot(i, master, position);
+            Robot robot = new Robot(i, master, floor, position);
             availableRobots.add(robot);
         }
     }
@@ -116,7 +118,7 @@ public class RobotScheduler implements EventConsumer {
      * @param s The shelf to fetch
      * @return Returns whether or not the order was accepted. It will be rejected if there are no available robots
      */
-    public boolean fetch(MockShelf s) {
+    public boolean fetch(Shelf s) {
         Robot r;
         try {
             r = availableRobots.removeFirst();

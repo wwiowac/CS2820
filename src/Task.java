@@ -1,11 +1,17 @@
 import java.awt.*;
 
+/**
+ * A simple description of the action that will take place, together
+ * with the EventConsumer that will handle it. This is essentially
+ * a struct
+ */
 public class Task {
 
     public enum TaskType {
         BeginItemRetrieval,
         AvailableRobotRetrieveFromLocation,
         RaiseShelf,
+        ShelfPickedUp,
         SpecificRobotPlotPath,
         SpecificRobotToLocation,
         RobotCharged,

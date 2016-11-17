@@ -1,17 +1,29 @@
-import java.awt.Point;
+import java.awt.*;
+import java.util.*;
 
-/**
- * 
- * @author Gabriel
- * Generates each Shelf in a ShelfArea
- */
 public class Shelf {
-	Point home;// home location of shelf
-	/**
-	 * Constructor needs home Point where shelf is born and 
-	 * returns after moving around
-	 */ 
-	public Shelf(Point home) {
-		this.home = new Point(home.x,home.y);
-	}
+
+    private Master master;
+    private Floor floor;
+
+    private UUID shelfId;
+    private Point location;
+
+    public Shelf(UUID shelfId, Point location){
+        this.shelfId = shelfId;
+        this.location = location;
+    }
+
+    public UUID getShelfId() {
+        return shelfId;
+    }
+
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
+    }
+
 }
