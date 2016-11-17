@@ -2,10 +2,13 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.*;
 
+import static java.lang.Thread.sleep;
+
 
 /**
  * Master class. Contains main method for initializing the simulation, and is
  * responsible for running the simulation.
+ *
  * @author wesley
  */
 public class Master implements EventConsumer {
@@ -14,6 +17,7 @@ public class Master implements EventConsumer {
     RobotScheduler robotscheduler;
     InventoryManagement inventory;
     Integer currentTime;
+    Visualizer visualizer;
 
     private PriorityQueue<ScheduledEvent> EventQueue;
 
@@ -26,20 +30,18 @@ public class Master implements EventConsumer {
      */
     Master() {
         EventQueue = new PriorityQueue<>(new scheduleOrdering());
-        inventory = new InventoryManagement(this);
-        floor = new Floor(this, inventory);
+        floor = new Floor(this);
+        inventory = new InventoryManagement(floor);
         robotscheduler = new RobotScheduler(this, floor, inventory);
+        visualizer = new Visualizer(floor);
         currentTime = 0;
 
         /// Temporary inventory setup TODO: Remove this
         // Setup inventory
-        inventory.addShelf(new Point(17, 24));
-        InventoryItem[] items = {}; // = seed items
+        InventoryItem[] items = {dummyitem}; // = seed items
         for (InventoryItem item : items) {
             inventory.addItem(item);
         }
-
-        inventory.addItem(dummyitem);
     }
 
     /**
@@ -48,6 +50,7 @@ public class Master implements EventConsumer {
     private class scheduleOrdering implements Comparator<ScheduledEvent> {
         /**
          * Determines the ordering of two ScheduledEvents
+         *
          * @param o1
          * @param o2
          * @return 1 | -1 | 0
@@ -68,6 +71,7 @@ public class Master implements EventConsumer {
      * Handles a Task and its parent event.
      * Implementing this method makes Master an EventConsumer.
      * makes
+     *
      * @param task
      * @param event
      */
@@ -88,6 +92,7 @@ public class Master implements EventConsumer {
 
     /**
      * Schedule an event to occur "immediately"
+     *
      * @param event
      */
     public void scheduleEvent(Event event) {
@@ -97,11 +102,12 @@ public class Master implements EventConsumer {
     /**
      * Schedule an event to occur offset time from now.
      * This method is unique to Master.
+     *
      * @param event
      * @param offset
      */
     public void scheduleEvent(Event event, Integer offset) {
-        ScheduledEvent todo = new ScheduledEvent(event, currentTime+offset);
+        ScheduledEvent todo = new ScheduledEvent(event, currentTime + offset);
         EventQueue.add(todo);
     }
 
@@ -120,11 +126,15 @@ public class Master implements EventConsumer {
             Event e = se.event;
             // Execute the next Task in the event
             e.doNextTask();
-            /*try {
-                System.in.read();
-            } catch (IOException e1) {
+
+            // Repaint
+            visualizer.repaint();
+            try {
+                sleep(50);
+            } catch (InterruptedException e1) {
                 e1.printStackTrace();
-            }*/
+            }
+
         }
     }
 
@@ -138,6 +148,7 @@ public class Master implements EventConsumer {
     /**
      * main method for initializing master.
      * Also added initial events to queue.
+     *
      * @param args
      */
     public static void main(String[] args) {
@@ -147,12 +158,15 @@ public class Master implements EventConsumer {
         Event e1 = new Event(new Task(Task.TaskType.BeginItemRetrieval, dummyitem.getId()), master);
         master.scheduleEvent(e1);
         master.simulate();
+
+        System.out.println("Done!");
     }
 
 }
 
 /**
  * Helper class for event in priority queue.
+ *
  * @author wesley
  */
 class ScheduledEvent {

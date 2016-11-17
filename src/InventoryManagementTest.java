@@ -10,7 +10,8 @@ import static org.junit.Assert.*;
  */
 public class InventoryManagementTest {
     Master master = new Master();
-    InventoryManagement inventory = new InventoryManagement(master);
+    Floor floor = new Floor(master);
+    InventoryManagement inventory = new InventoryManagement(floor);
 
     @org.junit.Test
     public void addShelf() throws Exception {
@@ -23,16 +24,14 @@ public class InventoryManagementTest {
     }
 
     /**
-     *
-     * @throws Exception
-     * should print out the list of inventory items
+     * @throws Exception should print out the list of inventory items
      */
     @Test
     public void getCurrentInventory() throws Exception {
         inventory.addShelf(new Point(17, 24));
 
         //seeds the inventory with a random quantity
-        for (InventoryItem item:InventoryList.catalog) {
+        for (InventoryItem item : InventoryList.catalog) {
             inventory.addItem(item);
         }
 
