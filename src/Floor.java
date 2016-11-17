@@ -62,12 +62,29 @@ public class Floor {
      * @return false if movement is prohibited (another robot in the way)
      */
 	public boolean moveRobot(Point oldpos, Point newpos, boolean carryshelf) {
-        if (grid[newpos.x][newpos.y] == Item.EMPTY) {
-            grid[newpos.x][newpos.y] = Item.ROBOT;
-        } else if (grid[newpos.x][newpos.y] == Item.SHELF) {
-            grid[newpos.x][newpos.y] = Item.ROBOTLOWEREDSHELF;
+        // Set state of new location and verify move can take place
+        if (grid[oldpos.x][oldpos.y] == Item.ROBOTRAISEDSHELF) {
+            if (grid[newpos.x][newpos.y] == Item.EMPTY) {
+                grid[newpos.x][newpos.y] = Item.ROBOTRAISEDSHELF;
+            } else {
+                return false;
+            }
         } else {
-            return false;
+            if (grid[newpos.x][newpos.y] == Item.EMPTY) {
+                grid[newpos.x][newpos.y] = Item.ROBOT;
+            } else if (grid[newpos.x][newpos.y] == Item.SHELF) {
+                grid[newpos.x][newpos.y] = Item.ROBOTLOWEREDSHELF;
+            } else {
+                return false;
+            }
+        }
+        // Set state of old location
+        if (grid[oldpos.x][oldpos.y] == Item.ROBOT) {
+            grid[oldpos.x][oldpos.y] = Item.EMPTY;
+        } else if (grid[oldpos.x][oldpos.y] == Item.ROBOTLOWEREDSHELF) {
+            grid[oldpos.x][oldpos.y] = Item.SHELF;
+        } else if (grid[oldpos.x][oldpos.y] == Item.ROBOTRAISEDSHELF) {
+            grid[oldpos.x][oldpos.y] = Item.EMPTY;
         }
         return true;
     }

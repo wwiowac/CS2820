@@ -6,6 +6,7 @@ import java.util.*;
 /**
  * Master class. Contains main method for initializing the simulation, and is
  * responsible for running the simulation.
+ * @author wesley
  */
 public class Master implements EventConsumer {
 
@@ -152,6 +153,7 @@ public class Master implements EventConsumer {
 
 /**
  * Helper class for event in priority queue.
+ * @author wesley
  */
 class ScheduledEvent {
     Event event;
