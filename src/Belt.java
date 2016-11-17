@@ -54,6 +54,7 @@ public class Belt implements EventConsumer{
         cells = new HashMap<>();
         packages = new HashMap<>();
         packageCells = new HashMap<>();
+        indexLocations = new HashMap<>();
 
         initializeBelt();
     }
@@ -147,7 +148,7 @@ public class Belt implements EventConsumer{
 
     
     /**
-     * @description: This method will initialize the belt separated by beltCells. It will also initialize  
+     *  Initialize the belt separated by beltCells. It will also initialize  
      *  indexLocations representing the location of each index. Will complete once 
      *  we decide on the length of the belt, the number of cells we want, etc. 
      */
