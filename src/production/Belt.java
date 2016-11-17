@@ -1,11 +1,12 @@
-/**
+package production; /**
  *@author Jacob Guth
  *
  * Updated 11/16/2106
  *
- * TODO: Implement updateStatus() that communicates to the Floor the content
- *       of the Belt 
+ * TODO: Implement updateStatus() that communicates to the production.Floor the content
+ *       of the production.Belt
  */
+import java.lang.*;
 import java.util.HashMap;
 import java.awt.*;
 
@@ -24,7 +25,7 @@ public class Belt implements EventConsumer{
 
     
     private HashMap<String, BeltCell> cells;    //Maps each beltCell id to its object
-    private HashMap<String, Package> packages;  //Maps the ID of each package on the belt to its object  
+    private HashMap<String, Package> packages;  //Maps the ID of each package on the belt to its object
     private HashMap<String, BeltCell> packageCells; //Maps each package on the belt to the beltCell it occupies
     private HashMap<Integer, Point> indexLocations; //Maps each index on the belt to its point location
     
@@ -33,7 +34,7 @@ public class Belt implements EventConsumer{
     private boolean canMove;
 
     /**
-     * @constructor -  initializes a belt with a designated Master and Floor 
+     * @constructor -  initializes a belt with a designated production.Master and production.Floor
      */
     public Belt(Master master, Floor floor){
         
@@ -46,7 +47,7 @@ public class Belt implements EventConsumer{
         
         canMove = true;
 
-        //Belt length depends on begin and end point. Belt width set to 20 as shown in FloorPlan.png, number of cells set to 50
+        //production.Belt length depends on begin and end point. production.Belt width set to 20 as shown in FloorPlan.png, number of cells set to 50
         BELT_LENGTH = (int) Math.abs(end.getY() - begin.getY());
         BELT_WIDTH = 20;
         NUM_CELLS = 50;
@@ -99,8 +100,8 @@ public class Belt implements EventConsumer{
 
 
     /**
-     * Adds a Package to the specified beltCell on the belt
-     * @param inventoryPackage: a Package of InventoryItems
+     * Adds a production.Package to the specified beltCell on the belt
+     * @param inventoryPackage: a production.Package of InventoryItems
      * @param cell_id: String ID of the beltCell to be added to 
      */
     public void addPackage(Package inventoryPackage, String cell_id){
@@ -112,8 +113,8 @@ public class Belt implements EventConsumer{
     }
     
     /**
-     * Removes and returns the Package specified by packageID from the belt
-     * @param packageID: a Package of InventoryItems
+     * Removes and returns the production.Package specified by packageID from the belt
+     * @param packageID: a production.Package of InventoryItems
      * @return: package identified by packageID to that was removed
      */
     public Package removePackage(String packageID){
@@ -130,7 +131,7 @@ public class Belt implements EventConsumer{
      */
     public Point getPackageLocation(String packageID){
         if(!packageCells.containsKey(packageID)){
-            System.out.println("Package "+packageID+"not found on the belt");
+            System.out.println("production.Package "+packageID+"not found on the belt");
             return null;
         }else{
             return packageCells.get(packageID).getLocation();
@@ -138,10 +139,10 @@ public class Belt implements EventConsumer{
     }
 
     /**
-     * Updates the current status of the Belt to the Floor
+     * Updates the current status of the production.Belt to the production.Floor
      *
      * NOTE: further implementation I believe will require implementation of an updateStatus in
-     * Floor.java
+     * production.Floor.java
      */
     public void updateStatus(){
     }
@@ -171,10 +172,10 @@ public class Belt implements EventConsumer{
     }
 
     /**
-    * Belt is comprised of beltCells, each with an index indicating its location on the belt and
+    * production.Belt is comprised of beltCells, each with an index indicating its location on the belt and
     * an id. 
     *
-    * @description: class Cell has methods that identify and locate the packages they are occupied with
+    * @description: class production.Cell has methods that identify and locate the packages they are occupied with
     */
     private class BeltCell {
         
@@ -222,7 +223,7 @@ public class Belt implements EventConsumer{
         }
         
         /**
-         * @param inventoryPackage: Package to be added to this Cell
+         * @param inventoryPackage: production.Package to be added to this production.Cell
          */
         public void addPackage(Package inventoryPackage){
             this.inventoryPackage = inventoryPackage;
@@ -230,7 +231,7 @@ public class Belt implements EventConsumer{
         }
         
         /**
-         * @return: Package that was removed from this beltCell
+         * @return: production.Package that was removed from this beltCell
          */
         public Package removePackage(){
             Package temp = inventoryPackage;
@@ -250,7 +251,7 @@ public class Belt implements EventConsumer{
             try{
                 return inventoryPackage;
             }catch(Exception e){
-                System.out.println("Cell "+ID+"does not contain a package");
+                System.out.println("production.Cell "+ID+"does not contain a package");
             }
             return null;
         }

@@ -1,12 +1,12 @@
-import java.awt.*;
-import java.io.IOException;
+package production;
+
 import java.util.*;
 
 import static java.lang.Thread.sleep;
 
 
 /**
- * Master class. Contains main method for initializing the simulation, and is
+ * production.Master class. Contains main method for initializing the simulation, and is
  * responsible for running the simulation.
  * @author wesley
  */
@@ -26,7 +26,7 @@ public class Master implements EventConsumer {
 
     /**
      * Setup the simulation. This should only load thing that will be used in every simulation.
-     * Simulation specific setup should be handled in the method initializing Master.
+     * Simulation specific setup should be handled in the method initializing production.Master.
      */
     Master() {
         EventQueue = new PriorityQueue<>(new scheduleOrdering());
@@ -69,8 +69,8 @@ public class Master implements EventConsumer {
     }
 
     /**
-     * Handles a Task and its parent event.
-     * Implementing this method makes Master an EventConsumer.
+     * Handles a production.Task and its parent event.
+     * Implementing this method makes production.Master an production.EventConsumer.
      * makes
      * @param task
      * @param event
@@ -84,7 +84,7 @@ public class Master implements EventConsumer {
 
                 Shelf s = inventory.getItemShelf(inventory.getItembySku(task.itemsku));
                 if(!s.isAvailable()) {
-                    System.out.println("Item could not be retrieved: Shelf in use.");
+                    System.out.println("Item could not be retrieved: production.Shelf in use.");
                     event.addFirstTask(task, this);
                     scheduleEvent(event, 1);
                 } else {
@@ -107,7 +107,7 @@ public class Master implements EventConsumer {
 
     /**
      * Schedule an event to occur offset time from now.
-     * This method is unique to Master.
+     * This method is unique to production.Master.
      * @param event
      * @param offset
      */
@@ -129,7 +129,7 @@ public class Master implements EventConsumer {
             // Jump to time of next event
             currentTime = se.time;
             Event e = se.event;
-            // Execute the next Task in the event
+            // Execute the next production.Task in the event
             e.doNextTask();
 
             // Repaint
@@ -159,7 +159,7 @@ public class Master implements EventConsumer {
     public static void main(String[] args) {
         Master master = new Master();
 
-        // Seed Event queue
+        // Seed production.Event queue
         for (InventoryItem item : inventoryItems) {
             Event e = new Event(new Task(Task.TaskType.BeginItemRetrieval, item.getId()), master);
             master.scheduleEvent(e);
