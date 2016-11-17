@@ -1,3 +1,5 @@
+package production;
+
 import java.util.*;
 
 /**
@@ -90,7 +92,7 @@ public class InventoryItem{
      * @return a random price
      *
      * description: used to assign a random price to the inventoryItem until a price system is figured out.
-     *              I'll likely assign a specific price to each item in InventoryList.
+     *              I'll likely assign a specific price to each item in production.InventoryList.
      */
     private double generatePrice(){
         int min = 10;
