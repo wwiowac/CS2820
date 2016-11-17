@@ -6,6 +6,7 @@ public class Task {
         BeginItemRetrieval,
         AvailableRobotRetrieveFromLocation,
         RaiseShelf,
+        ShelfPickedUp,
         SpecificRobotPlotPath,
         SpecificRobotToLocation,
         RobotCharged,

@@ -25,9 +25,9 @@ public class Master implements EventConsumer {
      */
     Master() {
         EventQueue = new PriorityQueue<>(new scheduleOrdering());
-        floor = new Floor(this);
-        robotscheduler = new RobotScheduler(this, floor);
-        inventory = new InventoryManagement();
+        inventory = new InventoryManagement(this);
+        floor = new Floor(this, inventory);
+        robotscheduler = new RobotScheduler(this, floor, inventory);
         currentTime = 0;
 
         /// Temporary inventory setup TODO: Remove this
@@ -81,6 +81,7 @@ public class Master implements EventConsumer {
                         robotscheduler);
                 spawnedevent.addLastTask(new Task(Task.TaskType.EventFinished), null);
                 scheduleEvent(spawnedevent);
+                break;
         }
     }
 

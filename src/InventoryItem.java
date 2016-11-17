@@ -7,7 +7,7 @@ public class InventoryItem{
     private String id;
     private String description;
     private double price = 0.0;
-    private MockShelf shelfID;
+    private Shelf shelfID;
     private int quantity;
 
     public InventoryItem(int id, String description){
@@ -41,11 +41,11 @@ public class InventoryItem{
         this.description = name;
     }
 
-    public void setShelfID(MockShelf shelfID) {
+    public void setShelfID(Shelf shelfID) {
         this.shelfID = shelfID;
     }
 
-    public MockShelf getShelfID() {
+    public Shelf getShelfID() {
         return shelfID;
     }
 

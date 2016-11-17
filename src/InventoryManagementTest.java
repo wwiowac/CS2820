@@ -9,7 +9,8 @@ import static org.junit.Assert.*;
  * Created by kyle on 11/10/16.
  */
 public class InventoryManagementTest {
-    InventoryManagement inventory = new InventoryManagement();
+    Master master = new Master();
+    InventoryManagement inventory = new InventoryManagement(master);
 
     @org.junit.Test
     public void addShelf() throws Exception {

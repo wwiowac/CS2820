@@ -3,15 +3,21 @@ import java.util.*;
 
 public class InventoryManagement {
 
-    private ArrayList<MockShelf> shelves;
+    private ArrayList<Shelf> shelves;
     private HashMap<String, InventoryItem> skulookup;
-    private HashMap<InventoryItem, MockShelf> currentInventory;
+    private HashMap<InventoryItem, Shelf> currentInventory;
+    private Master master;
 
     /**
      * constructor - declares a null inventory list and and shelves list to be used to manage inventory.
      */
-    public InventoryManagement() {
+    public InventoryManagement(Master master) {
+        this.master = master;
         shelves = new ArrayList<>();
+        // Add 5 shelves
+        for (int i = 0; i < 5; i++) {
+            addShelf(new Point(100+20*i, 70));
+        }
         currentInventory = new HashMap<>();
         skulookup = new HashMap<>();
     }
@@ -24,7 +30,7 @@ public class InventoryManagement {
      *
      */
     public void addShelf(Point location) {
-        MockShelf shelf = new MockShelf(UUID.randomUUID(), location);
+        Shelf shelf = new Shelf(UUID.randomUUID(), location);
         shelves.add(shelf);
     }
 
@@ -45,14 +51,13 @@ public class InventoryManagement {
      * @param shelf - specific shelf that the given item should be added to
      * description: adds an item to a specific shelf and indicates this addition in the currentInventory HashMap.
      */
-    public void addItem(InventoryItem item, MockShelf shelf) {
+    public void addItem(InventoryItem item, Shelf shelf) {
         currentInventory.put(item, shelf);
     }
 
-    public HashMap<InventoryItem, MockShelf> getCurrentInventory() {
+    public HashMap<InventoryItem, Shelf> getCurrentInventory() {
         return currentInventory;
     }
-
 
     /**
      *
@@ -72,7 +77,7 @@ public class InventoryManagement {
      * @return the shelf object the item is on
      * description: takes an item object and finds the current shelf it is on and returns it.
      */
-    public MockShelf getItemShelf(InventoryItem item) {
+    public Shelf getItemShelf(InventoryItem item) {
             return currentInventory.get(item);
     }
 
@@ -81,7 +86,14 @@ public class InventoryManagement {
     }
 
 
-
+    public Shelf getShelfByLocation(Point location) {
+        for (Shelf s : shelves) {
+            if (s.getLocation().equals(location)) {
+                return s;
+            }
+        }
+        return null;
+    }
 
 
 
