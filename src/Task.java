@@ -9,8 +9,10 @@ public class Task {
 
     public enum TaskType {
         BeginItemRetrieval,
+        EndItemRetrieval,
         AvailableRobotRetrieveFromLocation,
         RaiseShelf,
+        LowerShelf,
         ShelfPickedUp,
         SpecificRobotPlotPath,
         SpecificRobotToLocation,

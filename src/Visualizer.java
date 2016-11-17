@@ -30,7 +30,7 @@ public class Visualizer extends JApplet {
 
         frame.getContentPane().add("Center", this);
         frame.pack();
-        frame.setSize(new Dimension(1200, 750));
+        frame.setSize(new Dimension(1200, 700));
         repaint();
         frame.setVisible(true);
 
@@ -58,16 +58,19 @@ public class Visualizer extends JApplet {
         g2.drawString("Pink: Package", 10, 645);
         g2.drawString("Dark Grey: Picker", 10, 660);
         g2.drawString("Blue: Robot", 10, 675);
-        g2.drawString("Yellow: Shelf", 10, 690);
-        g2.drawString("Orange: Robot Lowered Shelf", 10, 705);
-        g2.drawString("Red: Robot Raised Shelf", 10, 720);
+
+        g2.drawString("Yellow: Shelf", 150, 615);
+        g2.drawString("Orange: Robot Lowered Shelf", 150, 630);
+        g2.drawString("Red: Robot Raised Shelf", 150, 645);
+        g2.drawString("Pink: Home", 150, 660);
+        g2.drawString("Magenta: Home with Robot", 150, 675);
         g2.setPaint(Color.gray);
 
         // Print the grid
-        Floor.Item[][] grid = floor.getGrid();
+        Cell[][] grid = floor.getGrid();
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
-                switch (grid[i][j]) {
+                switch (grid[i][j].type) {
                     case BELT:
                         g2.setColor(Color.BLACK);
                         break;
@@ -94,6 +97,12 @@ public class Visualizer extends JApplet {
                         break;
                     case EMPTY:
                         g2.setColor(Color.WHITE);
+                        break;
+                    case HOME:
+                        g2.setColor(Color.PINK);
+                        break;
+                    case ROBOTHOME:
+                        g2.setColor(Color.MAGENTA);
                         break;
                 }
 

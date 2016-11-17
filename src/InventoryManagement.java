@@ -33,7 +33,7 @@ public class InventoryManagement {
     public void addShelf(Point location) {
         Shelf shelf = new Shelf(UUID.randomUUID(), location);
         shelves.add(shelf);
-        floor.updateItemAt(location, Floor.Item.SHELF);
+        floor.updateItemAt(location, Cell.Type.SHELF);
     }
 
     /**
