@@ -8,12 +8,11 @@ import java.util.List;
 public class Floor {
 
     private Master master;
-    InventoryManagement inventory;
 
     //warehouse dimensions
     static final int warehouseWidth = 200;
     static final int warehouseDepth = 100;
-    private Item[][] grid = new Item[warehouseWidth][warehouseDepth];
+    private Item[][] grid;
 
     //warehouse locations and names
     final Point chargers = new Point(100, 10);
@@ -32,9 +31,16 @@ public class Floor {
      *
      * @param m (Master)
      */
-    public Floor(Master m, InventoryManagement i) {
+    public Floor(Master m) {
         master = m;
-        inventory = i;
+
+        grid = new Item[warehouseWidth][warehouseDepth];
+        // Initialize the floor to be empty
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                grid[i][j] = Floor.Item.EMPTY;
+            }
+        }
     }
 
     /**
@@ -66,10 +72,14 @@ public class Floor {
         return belt;
     }
 
+    public Item[][] getGrid() {
+        return grid;
+    }
+
     public Shelf raiseShelf(Point location) {
         if (grid[location.x][location.y] == Item.ROBOTLOWEREDSHELF) {
             grid[location.x][location.y] = Item.ROBOTRAISEDSHELF;
-            return inventory.getShelfByLocation(location);
+            return master.inventory.getShelfByLocation(location);
         }
         return null;
     }
@@ -78,7 +88,7 @@ public class Floor {
      * @param oldpos
      * @return false if movement is prohibited (another robot in the way)
      */
-    public boolean moveRobot(Point oldpos, Point newpos, boolean carryshelf) {
+    public boolean moveRobot(Point oldpos, Point newpos, boolean hasShelf) {
         // Set state of new location and verify move can take place
         if (grid[oldpos.x][oldpos.y] == Item.ROBOTRAISEDSHELF) {
             if (grid[newpos.x][newpos.y] == Item.EMPTY) {
@@ -95,14 +105,17 @@ public class Floor {
                 return false;
             }
         }
+
         // Set state of old location
-        if (grid[oldpos.x][oldpos.y] == Item.ROBOT) {
-            grid[oldpos.x][oldpos.y] = Item.EMPTY;
-        } else if (grid[oldpos.x][oldpos.y] == Item.ROBOTLOWEREDSHELF) {
-            grid[oldpos.x][oldpos.y] = Item.SHELF;
-        } else if (grid[oldpos.x][oldpos.y] == Item.ROBOTRAISEDSHELF) {
-            grid[oldpos.x][oldpos.y] = Item.EMPTY;
+        switch (grid[oldpos.x][oldpos.y]) {
+            case ROBOT:
+            case ROBOTRAISEDSHELF:
+                grid[oldpos.x][oldpos.y] = Item.EMPTY;
+                break;
+            case ROBOTLOWEREDSHELF:
+                grid[oldpos.x][oldpos.y] = Item.SHELF;
         }
+
         return true;
     }
 

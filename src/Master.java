@@ -2,6 +2,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.*;
 
+import static java.lang.Thread.sleep;
+
 
 /**
  * Master class. Contains main method for initializing the simulation, and is
@@ -15,7 +17,8 @@ public class Master implements EventConsumer {
     RobotScheduler robotscheduler;
     InventoryManagement inventory;
     Integer currentTime;
-    
+    Visualizer visualizer;
+
     private PriorityQueue<ScheduledEvent> EventQueue;
 
     // Dummy item
@@ -27,21 +30,19 @@ public class Master implements EventConsumer {
      */
     Master() {
         EventQueue = new PriorityQueue<>(new scheduleOrdering());
-        inventory = new InventoryManagement(this);
-        floor = new Floor(this, inventory);
+        floor = new Floor(this);
+        inventory = new InventoryManagement(floor);
         robotscheduler = new RobotScheduler(this, floor, inventory);
         belt = new Belt(this, floor);
+        visualizer = new Visualizer(floor);
         currentTime = 0;
 
         /// Temporary inventory setup TODO: Remove this
         // Setup inventory
-        inventory.addShelf(new Point(17, 24));
-        InventoryItem[] items = {}; // = seed items
+        InventoryItem[] items = {dummyitem}; // = seed items
         for (InventoryItem item : items) {
             inventory.addItem(item);
         }
-
-        inventory.addItem(dummyitem);
     }
 
     /**
@@ -103,7 +104,7 @@ public class Master implements EventConsumer {
      * @param offset
      */
     public void scheduleEvent(Event event, Integer offset) {
-        ScheduledEvent todo = new ScheduledEvent(event, currentTime+offset);
+        ScheduledEvent todo = new ScheduledEvent(event, currentTime + offset);
         EventQueue.add(todo);
     }
 
@@ -122,11 +123,15 @@ public class Master implements EventConsumer {
             Event e = se.event;
             // Execute the next Task in the event
             e.doNextTask();
-            /*try {
-                System.in.read();
-            } catch (IOException e1) {
+
+            // Repaint
+            visualizer.repaint();
+            try {
+                sleep(500);
+            } catch (InterruptedException e1) {
                 e1.printStackTrace();
-            }*/
+            }
+
         }
     }
 
