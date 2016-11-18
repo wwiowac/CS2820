@@ -3,8 +3,8 @@ package production;
 import java.awt.*;
 
 public class Cell extends Point {
-    private Object contents;  // production.Robot or production.Shelf
-    private Robot shadow;    // could be production.Robot at same place as production.Shelf
+    private Object contents;  // Robot or Shelf
+    private Robot shadow;    // could be Robot at same place as Shelf
     Type type;
     int finalCost;
     Cell parent;
@@ -34,19 +34,19 @@ public class Cell extends Point {
     }
 
     /**
-     * Display production.Cell as a string
+     * Display Cell as a string
      */
     public String toString() {
         String result = super.toString();
-        if (contents instanceof Robot) result += " contains production.Robot";
-        if (contents instanceof Shelf) result += " contains production.Shelf";
+        if (contents instanceof Robot) result += " contains Robot";
+        if (contents instanceof Shelf) result += " contains Shelf";
         return result;
     }
 
     /**
-     * Provide a clone() method for production.Visualizer; this code has a
+     * Provide a clone() method for Visualizer; this code has a
      * BUG - the clone is not a deep copy (to make it a deep copy,
-     * things like production.Robot, production.Shelf, etc, would all need to implement
+     * things like Robot, Shelf, etc, would all need to implement
      * clone as well).
      */
 

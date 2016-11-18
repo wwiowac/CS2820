@@ -1,7 +1,7 @@
 package production;/*
 * @author Jacob Guth
 *
-* Defines a group of InventoryItems for production.Belt implementation
+* Defines a group of InventoryItems for Belt implementation
 */
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -10,10 +10,10 @@ public class Package{
     
     private String ID;
     private ArrayList<InventoryItem> contents;
-    private HashMap<String, InventoryItem> items;   //Maps each production.InventoryItem in the package to its respective object
+    private HashMap<String, InventoryItem> items;   //Maps each InventoryItem in the package to its respective object
     
     /**
-     * @constructor: initializes a production.Package with an ArrayList of InventoryItems
+     * @constructor: initializes a Package with an ArrayList of InventoryItems
      */
     public Package(ArrayList<InventoryItem> contents, String ID){
         this.ID = ID;
@@ -31,7 +31,7 @@ public class Package{
     }
 
     /**
-     * Adds an production.InventoryItem to this package
+     * Adds an InventoryItem to this package
      * @param item 
      */
     public void addItem(InventoryItem item){
@@ -40,15 +40,15 @@ public class Package{
 
     /**
      * Removes an item from this package
-     * @param id : String id of the production.InventoryItem to be removed
+     * @param id : String id of the InventoryItem to be removed
      */
     public void removeItem(String id){
         items.remove(id);
     }
 
     /**
-     * Returns true if this package contains the specified production.InventoryItem; false otherwise
-     * @param id : String id of the production.InventoryItem in question
+     * Returns true if this package contains the specified InventoryItem; false otherwise
+     * @param id : String id of the InventoryItem in question
      * @return boolean 
      */
     public boolean contains(String id){

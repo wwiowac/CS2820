@@ -23,7 +23,7 @@ public class Visualizer extends JApplet {
     Visualizer(Floor f) {
         this.floor = f;
 
-        JFrame frame = new JFrame("production.Visualizer");
+        JFrame frame = new JFrame("Visualizer");
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
@@ -55,17 +55,17 @@ public class Visualizer extends JApplet {
 
         // Output the labels
         g2.setColor(Color.BLACK);
-        g2.drawString("Black: production.Belt", 10, 615);
+        g2.drawString("Black: Belt", 10, 615);
         g2.drawString("Cyan: Charger", 10, 630);
-        g2.drawString("Pink: production.Package", 10, 645);
+        g2.drawString("Pink: Package", 10, 645);
         g2.drawString("Dark Grey: Picker", 10, 660);
-        g2.drawString("Blue: production.Robot", 10, 675);
+        g2.drawString("Blue: Robot", 10, 675);
 
-        g2.drawString("Yellow: production.Shelf", 150, 615);
-        g2.drawString("Orange: production.Robot Lowered production.Shelf", 150, 630);
-        g2.drawString("Red: production.Robot Raised production.Shelf", 150, 645);
+        g2.drawString("Yellow: Shelf", 150, 615);
+        g2.drawString("Orange: Robot Lowered Shelf", 150, 630);
+        g2.drawString("Red: Robot Raised Shelf", 150, 645);
         g2.drawString("Pink: Home", 150, 660);
-        g2.drawString("Magenta: Home with production.Robot", 150, 675);
+        g2.drawString("Magenta: Home with Robot", 150, 675);
         g2.setPaint(Color.gray);
 
         // Print the grid

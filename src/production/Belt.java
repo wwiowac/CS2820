@@ -3,8 +3,7 @@ package production; /**
  *
  * Updated 11/16/2106
  *
- * TODO: Implement updateStatus() that communicates to the production.Floor the content
- *       of the production.Belt
+ * TODO: Implement updateStatus() that communicates to the Floor the content of the Belt
  */
 import java.lang.*;
 import java.util.HashMap;
@@ -34,7 +33,7 @@ public class Belt implements EventConsumer{
     private boolean canMove;
 
     /**
-     * @constructor -  initializes a belt with a designated production.Master and production.Floor
+     * @constructor -  initializes a belt with a designated Master and Floor
      */
     public Belt(Master master, Floor floor){
         
@@ -47,7 +46,7 @@ public class Belt implements EventConsumer{
         
         canMove = true;
 
-        //production.Belt length depends on begin and end point. production.Belt width set to 20 as shown in FloorPlan.png, number of cells set to 50
+        //Belt length depends on begin and end point. Belt width set to 20 as shown in FloorPlan.png, number of cells set to 50
         BELT_LENGTH = (int) Math.abs(end.getY() - begin.getY());
         BELT_WIDTH = 20;
         NUM_CELLS = 50;
@@ -100,8 +99,8 @@ public class Belt implements EventConsumer{
 
 
     /**
-     * Adds a production.Package to the specified beltCell on the belt
-     * @param inventoryPackage: a production.Package of InventoryItems
+     * Adds a Package to the specified beltCell on the belt
+     * @param inventoryPackage: a Package of InventoryItems
      * @param cell_id: String ID of the beltCell to be added to 
      */
     public void addPackage(Package inventoryPackage, String cell_id){
@@ -113,8 +112,8 @@ public class Belt implements EventConsumer{
     }
     
     /**
-     * Removes and returns the production.Package specified by packageID from the belt
-     * @param packageID: a production.Package of InventoryItems
+     * Removes and returns the Package specified by packageID from the belt
+     * @param packageID: a Package of InventoryItems
      * @return: package identified by packageID to that was removed
      */
     public Package removePackage(String packageID){
@@ -131,7 +130,7 @@ public class Belt implements EventConsumer{
      */
     public Point getPackageLocation(String packageID){
         if(!packageCells.containsKey(packageID)){
-            System.out.println("production.Package "+packageID+"not found on the belt");
+            System.out.println("Package "+packageID+"not found on the belt");
             return null;
         }else{
             return packageCells.get(packageID).getLocation();
@@ -139,10 +138,10 @@ public class Belt implements EventConsumer{
     }
 
     /**
-     * Updates the current status of the production.Belt to the production.Floor
+     * Updates the current status of the Belt to the Floor
      *
      * NOTE: further implementation I believe will require implementation of an updateStatus in
-     * production.Floor.java
+     * Floor.java
      */
     public void updateStatus(){
     }
@@ -172,10 +171,10 @@ public class Belt implements EventConsumer{
     }
 
     /**
-    * production.Belt is comprised of beltCells, each with an index indicating its location on the belt and
+    * Belt is comprised of beltCells, each with an index indicating its location on the belt and
     * an id. 
     *
-    * @description: class production.Cell has methods that identify and locate the packages they are occupied with
+    * @description: class Cell has methods that identify and locate the packages they are occupied with
     */
     private class BeltCell {
         
@@ -223,7 +222,7 @@ public class Belt implements EventConsumer{
         }
         
         /**
-         * @param inventoryPackage: production.Package to be added to this production.Cell
+         * @param inventoryPackage: Package to be added to this Cell
          */
         public void addPackage(Package inventoryPackage){
             this.inventoryPackage = inventoryPackage;
@@ -231,7 +230,7 @@ public class Belt implements EventConsumer{
         }
         
         /**
-         * @return: production.Package that was removed from this beltCell
+         * @return: Package that was removed from this beltCell
          */
         public Package removePackage(){
             Package temp = inventoryPackage;
@@ -251,7 +250,7 @@ public class Belt implements EventConsumer{
             try{
                 return inventoryPackage;
             }catch(Exception e){
-                System.out.println("production.Cell "+ID+"does not contain a package");
+                System.out.println("Cell "+ID+"does not contain a package");
             }
             return null;
         }

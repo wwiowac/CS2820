@@ -29,7 +29,7 @@ public class Floor {
     /**
      * Constructor
      *
-     * @param m (production.Master)
+     * @param m (Master)
      */
     public Floor(Master m) {
         master = m;

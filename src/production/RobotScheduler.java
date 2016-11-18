@@ -28,7 +28,7 @@ public class RobotScheduler implements EventConsumer {
     }
 
     /**
-     * Initializes production.Robot objects in the warehouse
+     * Initializes Robot objects in the warehouse
      * @author Jacob Roschen
      *
      * @param robotCount Number of robots to initialize
@@ -81,7 +81,7 @@ public class RobotScheduler implements EventConsumer {
             case SpecificRobotPlotPath:
                 ArrayList<Point> route = findPath(task.robot.getLocation(), task.location, task.robot.hasShelf());
                 if (route == null) {
-                    System.out.println("production.Robot is already at destination or a path cannot be determined");
+                    System.out.println("Robot is already at destination or a path cannot be determined");
                     master.scheduleEvent(event, 1);
                     return;
                 }
