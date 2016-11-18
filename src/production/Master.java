@@ -39,7 +39,7 @@ public class Master implements EventConsumer {
 
         /// Temporary inventory setup TODO: Remove this
         // Setup inventory
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 25; i++) {
             InventoryItem item = new InventoryItem(""+ i, i +" toilet paper", i);
             inventory.addItem(item);
             inventoryItems.add(item);
@@ -119,26 +119,34 @@ public class Master implements EventConsumer {
     /**
      * The main simulation loop for master.
      * Executes scheduled events in the priority queue.
+     *
+     * @param speedMultiplier How fast the simulation should run. Ex. 2 is 2x's as fast as normal speed
      */
-    public void simulate() {
-        System.out.println("Time: " + currentTime.toString());
+    public void simulate(int speedMultiplier) {
+        System.out.println("Time: " + currentTime);
         System.out.println("Simulation beginning...");
+        long startTime = System.currentTimeMillis();
         // While there are things to do
         while (!EventQueue.isEmpty()) {
             ScheduledEvent se = EventQueue.poll();
+
+            // Controls the speed at which the game runs
+            if(!Objects.equals(currentTime, se.time)) {
+                visualizer.repaint(se.time);
+                try {
+                    long timeToSleepFor = (1000/speedMultiplier) - (System.currentTimeMillis() - startTime);
+                    if(timeToSleepFor > 0) sleep(timeToSleepFor);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                startTime = System.currentTimeMillis();
+            }
+
             // Jump to time of next event
             currentTime = se.time;
             Event e = se.event;
             // Execute the next Task in the event
             e.doNextTask();
-
-            // Repaint
-            visualizer.repaint();
-            try {
-                sleep(15);
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
 
         }
         System.out.println("Done!");
@@ -165,7 +173,7 @@ public class Master implements EventConsumer {
             master.scheduleEvent(e);
         }
 
-        master.simulate();
+        master.simulate(10);
     }
 
 }
