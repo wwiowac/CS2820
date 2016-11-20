@@ -38,10 +38,10 @@ public class Robot implements EventConsumer {
             case SpecificRobotToLocation:
                 master.printTime();
                 if (move(task.location)) {
-                    System.out.println("production.Robot " + id + " moved to [" + task.location.x + "," + task.location.y + "]");
+                    System.out.println("Robot " + id + " moved to [" + task.location.x + "," + task.location.y + "]");
                     blockedCount = 0;
                 } else {
-                    System.out.println("production.Robot " + id + " could not move to [" + task.location.x + "," + task.location.y + "]");
+                    System.out.println("Robot " + id + " could not move to [" + task.location.x + "," + task.location.y + "]");
                     // TODO: Need to reroute if it is stuck
                     event.addFirstTask(task, this);
                     blockedCount++;
@@ -65,12 +65,12 @@ public class Robot implements EventConsumer {
                 master.scheduleEvent(event, 1);
                 break;
             case RaiseShelf:
-                System.out.println("production.Robot " + id + " raising shelf");
+                System.out.println("Robot " + id + " raising shelf");
                 raise();
                 master.scheduleEvent(event, 1);
                 break;
             case LowerShelf:
-                System.out.println("production.Robot " + id + " lowering shelf");
+                System.out.println("Robot " + id + " lowering shelf");
                 lower();
                 if(this.needsRecharge()) {
                     // TODO: Tell the robot to go recharge
@@ -126,7 +126,7 @@ public class Robot implements EventConsumer {
      * @return true if the robot was able to move there
      */
     private boolean move(Point newloc) {
-        if (!floor.moveRobot(this.location, newloc, this.isRaised)) return false; // production.Robot did not move
+        if (!floor.moveRobot(this.location, newloc, this.isRaised)) return false; // Robot did not move
 
         chargeLevel -= Robot.MOVE_COST;
         this.location = newloc;

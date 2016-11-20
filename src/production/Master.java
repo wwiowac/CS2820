@@ -6,7 +6,7 @@ import static java.lang.Thread.sleep;
 
 
 /**
- * production.Master class. Contains main method for initializing the simulation, and is
+ * Master class. Contains main method for initializing the simulation, and is
  * responsible for running the simulation.
  * @author wesley
  */
@@ -26,7 +26,7 @@ public class Master implements EventConsumer {
 
     /**
      * Setup the simulation. This should only load thing that will be used in every simulation.
-     * Simulation specific setup should be handled in the method initializing production.Master.
+     * Simulation specific setup should be handled in the method initializing Master.
      */
     Master() {
         EventQueue = new PriorityQueue<>(new scheduleOrdering());
@@ -39,7 +39,7 @@ public class Master implements EventConsumer {
 
         /// Temporary inventory setup TODO: Remove this
         // Setup inventory
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 25; i++) {
             InventoryItem item = new InventoryItem(""+ i, i +" toilet paper", i);
             inventory.addItem(item);
             inventoryItems.add(item);
@@ -69,8 +69,8 @@ public class Master implements EventConsumer {
     }
 
     /**
-     * Handles a production.Task and its parent event.
-     * Implementing this method makes production.Master an production.EventConsumer.
+     * Handles a Task and its parent event.
+     * Implementing this method makes Master an EventConsumer.
      * makes
      * @param task
      * @param event
@@ -84,7 +84,7 @@ public class Master implements EventConsumer {
 
                 Shelf s = inventory.getItemShelf(inventory.getItembySku(task.itemsku));
                 if(!s.isAvailable()) {
-                    System.out.println("Item could not be retrieved: production.Shelf in use.");
+                    System.out.println("Item could not be retrieved: Shelf in use.");
                     event.addFirstTask(task, this);
                     scheduleEvent(event, 1);
                 } else {
@@ -107,7 +107,7 @@ public class Master implements EventConsumer {
 
     /**
      * Schedule an event to occur offset time from now.
-     * This method is unique to production.Master.
+     * This method is unique to Master.
      * @param event
      * @param offset
      */
@@ -119,26 +119,34 @@ public class Master implements EventConsumer {
     /**
      * The main simulation loop for master.
      * Executes scheduled events in the priority queue.
+     *
+     * @param speedMultiplier How fast the simulation should run. Ex. 2 is 2x's as fast as normal speed
      */
-    public void simulate() {
-        System.out.println("Time: " + currentTime.toString());
+    public void simulate(int speedMultiplier) {
+        System.out.println("Time: " + currentTime);
         System.out.println("Simulation beginning...");
+        long startTime = System.currentTimeMillis();
         // While there are things to do
         while (!EventQueue.isEmpty()) {
             ScheduledEvent se = EventQueue.poll();
+
+            // Controls the speed at which the game runs
+            if(!Objects.equals(currentTime, se.time)) {
+                visualizer.repaint(se.time);
+                try {
+                    long timeToSleepFor = (1000/speedMultiplier) - (System.currentTimeMillis() - startTime);
+                    if(timeToSleepFor > 0) sleep(timeToSleepFor);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                startTime = System.currentTimeMillis();
+            }
+
             // Jump to time of next event
             currentTime = se.time;
             Event e = se.event;
-            // Execute the next production.Task in the event
+            // Execute the next Task in the event
             e.doNextTask();
-
-            // Repaint
-            visualizer.repaint();
-            try {
-                sleep(15);
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
 
         }
         System.out.println("Done!");
@@ -159,13 +167,13 @@ public class Master implements EventConsumer {
     public static void main(String[] args) {
         Master master = new Master();
 
-        // Seed production.Event queue
+        // Seed Event queue
         for (InventoryItem item : inventoryItems) {
             Event e = new Event(new Task(Task.TaskType.BeginItemRetrieval, item.getId()), master);
             master.scheduleEvent(e);
         }
 
-        master.simulate();
+        master.simulate(10);
     }
 
 }

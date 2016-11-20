@@ -4,7 +4,7 @@ import java.awt.*;
 
 /**
  * A simple description of the action that will take place, together
- * with the production.EventConsumer that will handle it. This is essentially
+ * with the EventConsumer that will handle it. This is essentially
  * a struct
  */
 public class Task {
