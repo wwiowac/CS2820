@@ -81,7 +81,9 @@ public class Master implements EventConsumer {
                     scheduleEvent(event, 1);
                 } else {
                     s.setAvailable(false);
-                    Event spawnedevent = new Event(new Task(Task.TaskType.AvailableRobotRetrieveFromLocation, s.getLocation()), robotscheduler);
+                    Event spawnedevent = new Event(new Task(Task.TaskType.AvailableRobotRetrieveFromLocation, s.getLocation()), robotscheduler, event.ordernum);
+                    spawnedevent.addFirstTask(new Task(Task.TaskType.OrderStatus_Submitted), orders);
+                    spawnedevent.addLastTask(new Task(Task.TaskType.OrderStatus_Submitted), orders);
                     spawnedevent.addLastTask(new Task(Task.TaskType.EventFinished), null);
                     scheduleEvent(spawnedevent);
                 }

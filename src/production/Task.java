@@ -21,7 +21,9 @@ public class Task {
         RobotCharged,
         EventFinished,
         UpdateFloorPosition,
-        MoveBelt
+        MoveBelt,
+        OrderStatus_Submitted,
+        OrderStatus_Completed
     }
 
     public TaskType type;
