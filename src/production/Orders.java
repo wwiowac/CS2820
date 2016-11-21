@@ -5,11 +5,13 @@ import java.util.*;
 /**
  * @author Wesley Weirather
  */
-public class Orders {
+public class Orders implements EventConsumer {
     Master master;
+    private ArrayList<String> ordersStatus;
 
     public Orders(Master master) {
         this.master = master;
+        ordersStatus = new ArrayList<>();
     }
 
     /**
@@ -31,9 +33,29 @@ public class Orders {
      * @param time (from current)
      */
     public void scheduleOrder(InventoryItem item, int time) {
-        Event e = new Event(new Task(Task.TaskType.BeginItemRetrieval, item.getId()), master);
+        int ordernum = ordersStatus.size();
+        ordersStatus.add("Order pending");
+        Event e = new Event(new Task(Task.TaskType.BeginItemRetrieval, item.getId()), master, ordernum);
         master.scheduleEvent(e, time);
     }
 
+    /**
+     * Handle order status updates
+     * @param task
+     * @param event
+     */
+    @Override
+    public void handleTaskEvent(Task task, Event event) {
+        switch (task.type) {
+            case OrderStatus_Submitted:
+                ordersStatus.set(event.ordernum, "Order submitted");
+                master.scheduleEvent(event);
+                break;
+            case OrderStatus_Completed:
+                ordersStatus.set(event.ordernum, "Order completed");
+                master.scheduleEvent(event);
+                break;
+        }
+    }
 
 }
