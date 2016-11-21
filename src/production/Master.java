@@ -16,13 +16,12 @@ public class Master implements EventConsumer {
     Belt belt;
     RobotScheduler robotscheduler;
     InventoryManagement inventory;
-    Integer currentTime;
+    Orders orders;
     Visualizer visualizer;
 
     private PriorityQueue<ScheduledEvent> EventQueue;
+    Integer currentTime;
 
-    // Dummy item
-    static ArrayList<InventoryItem> inventoryItems = new ArrayList<>();
 
     /**
      * Setup the simulation. This should only load thing that will be used in every simulation.
@@ -32,18 +31,11 @@ public class Master implements EventConsumer {
         EventQueue = new PriorityQueue<>(new scheduleOrdering());
         floor = new Floor(this);
         inventory = new InventoryManagement(floor);
+        orders = new Orders(this);
         robotscheduler = new RobotScheduler(this, floor, inventory);
         belt = new Belt(this, floor);
         visualizer = new Visualizer(floor);
         currentTime = 0;
-
-        /// Temporary inventory setup TODO: Remove this
-        // Setup inventory
-        for (int i = 0; i < 25; i++) {
-            InventoryItem item = new InventoryItem(""+ i, i +" toilet paper", i);
-            inventory.addItem(item);
-            inventoryItems.add(item);
-        }
     }
 
     /**
@@ -167,11 +159,7 @@ public class Master implements EventConsumer {
     public static void main(String[] args) {
         Master master = new Master();
 
-        // Seed Event queue
-        for (InventoryItem item : inventoryItems) {
-            Event e = new Event(new Task(Task.TaskType.BeginItemRetrieval, item.getId()), master);
-            master.scheduleEvent(e);
-        }
+        master.orders.scheduleRandomOrders(4, 100);
 
         master.simulate(10);
     }

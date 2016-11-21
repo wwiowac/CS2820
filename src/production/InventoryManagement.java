@@ -2,6 +2,7 @@ package production;
 
 import java.awt.*;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class InventoryManagement {
 
@@ -25,6 +26,11 @@ public class InventoryManagement {
                 this.addShelf(new Point(20 + i, 20 + j + 1));
             }
         }
+
+        // Load the inventory with everything on the list
+        // Later, we might want to only load a subset so that new items can
+        // arrive by truck.
+        Arrays.stream(InventoryList.catalog).forEach(this::addItem);
     }
 
     /**
@@ -59,16 +65,6 @@ public class InventoryManagement {
 
     public HashMap<InventoryItem, Shelf> getCurrentInventory() {
         return currentInventory;
-    }
-
-    /**
-     * @param item - single item to be used in generating an order
-     *             <p>
-     *             Description: This is used to call the robot with the specific items that need to be taken
-     *             to the belt by the robot.
-     */
-    public void generateOrder(InventoryItem item) {
-        //TODO:Figure out order process and implement inventory accordingly
     }
 
 
