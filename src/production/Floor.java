@@ -10,16 +10,16 @@ public class Floor {
     private Master master;
 
     //warehouse dimensions
-    static final int warehouseWidth = 200;
-    static final int warehouseDepth = 100;
+    static final int warehouseWidth = 60;
+    static final int warehouseDepth = 30;
     private Cell[][] grid;
 
     //warehouse locations and names
-    final Point chargers = new Point(100, 10);
+    final Point chargers = new Point(20, 0);
     final Point shippingDock = new Point(10, 0);
     final Point belt = new Point(20, 70);
     final Point pack = new Point(50, 40);
-    final Point pick = new Point(50, 90);
+    final private Point pick = new Point(5, 28);
     final Point receivingDock = new Point(190, 0);
     final Point highway1 = new Point(130, 85);
     final Point highway2 = new Point(80, 65);

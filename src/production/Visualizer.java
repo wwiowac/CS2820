@@ -117,7 +117,7 @@ public class Visualizer extends JApplet {
                         break;
                 }
 
-                Rectangle r = new Rectangle(i * 6, j * 6, 6, 6);
+                Rectangle r = new Rectangle(i * 20, j * 20, 20, 20);
                 g2.fill(r);
                 g2.setColor(Color.GRAY);
                 g2.draw(r);

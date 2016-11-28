@@ -24,18 +24,18 @@ public class RobotScheduler implements EventConsumer {
         master = m;
         floor = f;
         inventory = i;
-        seedRobots(5);
+        seedRobots(10);
     }
 
     /**
-     * Initializes Robot objects in the warehouse
+     * Initializes production.Robot objects in the warehouse
      * @author Jacob Roschen
      *
      * @param robotCount Number of robots to initialize
      */
     private void seedRobots(int robotCount) {
-        for (int i = 1; i <= robotCount; i++) {
-            Point position = new Point(9 + i, 0);
+        for (int i = 0; i <= robotCount; i++) {
+            Point position = new Point(20 + i, 0);
             Robot robot = new Robot(i, master, floor, position);
             availableRobots.add(robot);
         }
@@ -73,7 +73,7 @@ public class RobotScheduler implements EventConsumer {
                 event.addFirstTask(new Task(Task.TaskType.LowerShelf), robot);
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, task.location), this); // Go back to the shelf area
                 // TODO: Do something with the picker, but most of the above will probably  be moved into other areas
-                event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, floor.pick), this);
+                event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, floor.getPicker()), this);
                 event.addFirstTask(new Task(Task.TaskType.RaiseShelf), robot);
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, task.location), this);
                 master.scheduleEvent(event);
@@ -81,7 +81,7 @@ public class RobotScheduler implements EventConsumer {
             case SpecificRobotPlotPath:
                 ArrayList<Point> route = findPath(task.robot.getLocation(), task.location, task.robot.hasShelf());
                 if (route == null) {
-                    System.out.println("Robot is already at destination or a path cannot be determined");
+                    System.out.println("production.Robot is already at destination or a path cannot be determined");
                     master.scheduleEvent(event, 1);
                     return;
                 }
