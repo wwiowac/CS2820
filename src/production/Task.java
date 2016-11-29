@@ -18,7 +18,7 @@ public class Task {
         ShelfPickedUp,
         SpecificRobotPlotPath,
         SpecificRobotToLocation,
-        RobotCharged,
+        RobotCharge,
         EventFinished,
         UpdateFloorPosition,
         MoveBelt,
@@ -43,6 +43,11 @@ public class Task {
     Task(TaskType type, String itemsku) {
         this.type = type;
         this.itemsku = itemsku;
+    }
+
+    Task(TaskType type, Robot robot) {
+        this.type = type;
+        this.robot = robot;
     }
 
     Task(TaskType type, Robot robot, Point location) {

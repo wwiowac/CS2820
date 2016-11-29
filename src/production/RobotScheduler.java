@@ -28,7 +28,7 @@ public class RobotScheduler implements EventConsumer {
     }
 
     /**
-     * Initializes production.Robot objects in the warehouse
+     * Initializes Robot objects in the warehouse
      * @author Jacob Roschen
      *
      * @param robotCount Number of robots to initialize
@@ -75,13 +75,14 @@ public class RobotScheduler implements EventConsumer {
                 // TODO: Do something with the picker, but most of the above will probably  be moved into other areas
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, floor.getPicker()), this);
                 event.addFirstTask(new Task(Task.TaskType.RaiseShelf), robot);
+                // Move back to its home
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, task.location), this);
                 master.scheduleEvent(event);
                 break;
             case SpecificRobotPlotPath:
                 ArrayList<Point> route = findPath(task.robot.getLocation(), task.location, task.robot.hasShelf());
                 if (route == null) {
-                    System.out.println("production.Robot is already at destination or a path cannot be determined");
+                    System.out.println("Robot is already at destination or a path cannot be determined");
                     master.scheduleEvent(event, 1);
                     return;
                 }
@@ -92,9 +93,25 @@ public class RobotScheduler implements EventConsumer {
                 master.scheduleEvent(event, 1);
                 break;
             case EndItemRetrieval:
-                // After the robot has been returned home, let it do other work
-                availableRobots.add(task.robot);
+                // After the robot has been returned home, let it do other work including start charging
+                chargingRobots.add(task.robot);
                 workingRobots.remove(task.robot);
+                event.addFirstTask(new Task(Task.TaskType.RobotCharge, task.robot), this);
+                master.scheduleEvent(event, 1);
+                break;
+            case RobotCharge:
+                task.robot.charge();
+                System.out.println("Charging robot "+ task.robot + " " + task.robot.chargeLevel() +"%");
+                if(task.robot.needsRecharge()) {
+                    // keep charging
+                    event.addFirstTask(new Task(Task.TaskType.RobotCharge, task.robot), this);
+                } else {
+                    // Done charging
+                    System.out.println("Robot "+ task.robot +" done charging");
+                    availableRobots.add(task.robot);
+                    chargingRobots.remove(task.robot);
+                }
+
                 master.scheduleEvent(event, 1);
                 break;
         }
@@ -143,6 +160,7 @@ public class RobotScheduler implements EventConsumer {
 
     /**
      * Finds a path from the start Point to the end Point using the A* algorithm
+     * @author Jacob Roschen
      *
      * @param start Starting Point
      * @param end Ending Point

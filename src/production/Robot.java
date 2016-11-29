@@ -32,6 +32,14 @@ public class Robot implements EventConsumer {
         this.blockedCount = 0;
     }
 
+    /**
+     * Handles 'SpecificRobotToLocation', 'RaiseShelf', and 'LowerShelf'
+     *
+     * @author aJacob Roschen
+     *
+     * @param task Task to complete
+     * @param event Event to do
+     */
     @Override
     public void handleTaskEvent(Task task, Event event) {
         switch (task.type) {
@@ -72,9 +80,6 @@ public class Robot implements EventConsumer {
             case LowerShelf:
                 System.out.println("Robot " + id + " lowering shelf");
                 lower();
-                if(this.needsRecharge()) {
-                    // TODO: Tell the robot to go recharge
-                }
                 master.scheduleEvent(event, 1);
                 break;
         }
@@ -113,7 +118,27 @@ public class Robot implements EventConsumer {
      * @return if robot needs to be recharged
      */
     public boolean needsRecharge() {
-        return chargeLevel < 70;
+        return chargeLevel < 100;
+    }
+
+    /**
+     * Charge the robot 4x's faster than what it can move
+     *
+     * @author Jacob Roschen
+     */
+    public void charge() {
+        chargeLevel += MOVE_COST*4;
+    }
+
+    /**
+     * Returns the charge level of the robot
+     *
+     * @author Jacob Roschen
+     *
+     * @return The current charge level
+     */
+    public double chargeLevel() {
+        return chargeLevel;
     }
 
     /**
@@ -154,5 +179,10 @@ public class Robot implements EventConsumer {
      */
     public boolean hasShelf() {
         return shelf != null;
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(id);
     }
 }
