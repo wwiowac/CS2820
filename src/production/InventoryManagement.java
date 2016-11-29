@@ -20,10 +20,10 @@ public class InventoryManagement {
         currentInventory = new HashMap<>();
         skulookup = new HashMap<>();
 
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 30; j += 4) {
-                this.addShelf(new Point(20 + i, 20 + j));
-                this.addShelf(new Point(20 + i, 20 + j + 1));
+        for (int i = 0; i < 30; i++) {
+            for (int j = 0; j < 6*4; j += 4) {
+                this.addShelf(new Point(20 + i, 5 + j));
+                this.addShelf(new Point(20 + i, 5 + j + 1));
             }
         }
 
