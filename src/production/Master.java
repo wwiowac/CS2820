@@ -163,7 +163,7 @@ public class Master implements EventConsumer {
 
         master.orders.scheduleRandomOrders(4, 100);
 
-        master.simulate(10);
+        master.simulate(5);
     }
 
 }
