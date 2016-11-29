@@ -34,8 +34,9 @@ public class Robot implements EventConsumer {
 
     /**
      * Handles 'SpecificRobotToLocation', 'RaiseShelf', and 'LowerShelf'
+     * If the robot cannot move to the specified location, it will reroute
      *
-     * @author aJacob Roschen
+     * @author Jacob Roschen
      *
      * @param task Task to complete
      * @param event Event to do
@@ -50,22 +51,36 @@ public class Robot implements EventConsumer {
                     blockedCount = 0;
                 } else {
                     System.out.println("Robot " + id + " could not move to [" + task.location.x + "," + task.location.y + "]");
-                    // TODO: Need to reroute if it is stuck
                     event.addFirstTask(task, this);
                     blockedCount++;
 
-                    if(blockedCount > 5) {
-                        // Try to move in a random direction since we have been stuck
-                        int result = new Random().nextInt(2);
+                    // Wait until the robot hasn't been able to move for 3 turns
+                    if(blockedCount > 2) {
+                        // Try to move in a random direction and then reroute
+                        int result = new Random().nextInt(4);
                         Point newPoint = ((Point) location.clone());
-                        if(new Random().nextInt(2) == 1) {
-                            newPoint.translate(result, 0);
-                        } else {
-                            newPoint.translate(0, result);
+                        switch (result) {
+                            case 0:
+                                newPoint.translate(1, 0);
+                                break;
+                            case 1:
+                                newPoint.translate(-1, 0);
+                                break;
+                            case 2:
+                                newPoint.translate(0, 1);
+                                break;
+                            case 3:
+                                newPoint.translate(0, -1);
+                                break;
                         }
 
                         if(master.floor.isEmptyLocation(newPoint)) {
-                            event.addFirstTask(new Task(Task.TaskType.SpecificRobotToLocation, this.location), this);
+                            // Remove all old directions while retaining the end destination
+                            Point robotDestination = event.removeCurrentDirections();
+
+                            // Reroute the robot
+                            event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, this, robotDestination), this.master.robotscheduler);
+                            // Move in the random direction to try and free itself from collisions
                             event.addFirstTask(new Task(Task.TaskType.SpecificRobotToLocation, newPoint), this);
                         }
                     }
@@ -122,12 +137,14 @@ public class Robot implements EventConsumer {
     }
 
     /**
-     * Charge the robot 4x's faster than what it can move
+     * Charge the robot 4x's faster than what it can move, and make sure that it can only be charged to 100%
      *
      * @author Jacob Roschen
      */
     public void charge() {
         chargeLevel += MOVE_COST*4;
+
+        if(chargeLevel > 100) chargeLevel = 100;
     }
 
     /**
