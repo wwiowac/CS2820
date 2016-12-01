@@ -162,7 +162,17 @@ public class Floor {
         grid[p.x][p.y].type = i;
     }
 
+    /**
+     * Checks to see if the specified point p is empty
+     *
+     * @author Jacob Roschen
+     *
+     * @param p Point to check
+     * @return True if the point is valid and empty
+     */
     public boolean isEmptyLocation(Point p) {
+        if(p.x < 0 || p.x >= warehouseWidth || p.y < 0 || p.y >= warehouseDepth) return false;
+
         return (grid[p.x][p.y].type == Cell.Type.EMPTY);
     }
 }
