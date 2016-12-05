@@ -17,7 +17,6 @@ public class Master implements EventConsumer {
     RobotScheduler robotscheduler;
     InventoryManagement inventory;
     Orders orders;
-    Visualizer visualizer;
 
     private PriorityQueue<ScheduledEvent> EventQueue;
     Integer currentTime;
@@ -34,7 +33,6 @@ public class Master implements EventConsumer {
         orders = new Orders(this);
         robotscheduler = new RobotScheduler(this, floor, inventory);
         belt = new Belt(this, floor);
-        visualizer = new Visualizer(floor);
         currentTime = 0;
     }
 
@@ -117,6 +115,9 @@ public class Master implements EventConsumer {
      * @param speedMultiplier How fast the simulation should run. Ex. 2 is 2x's as fast as normal speed
      */
     public void simulate(int speedMultiplier) {
+        // Initialize the visualizer
+        Visualizer visualizer = new Visualizer(floor);
+
         System.out.println("Time: " + currentTime);
         System.out.println("Simulation beginning...");
         long startTime = System.currentTimeMillis();
