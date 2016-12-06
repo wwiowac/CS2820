@@ -19,12 +19,11 @@ public class Belt implements EventConsumer{
     private final Point end;			
 
     private final Integer BELT_LENGTH;
-    private final Integer BELT_WIDTH;
     private final Integer NUM_CELLS;
 
     
     private HashMap<String, BeltCell> cells;    //Maps each beltCell id to its object
-    private HashMap<String, Package> packages;  //Maps the ID of each package on the belt to its object
+    private HashMap<String, Bin> packages;  //Maps the ID of each package on the belt to its object
     private HashMap<String, BeltCell> packageCells; //Maps each package on the belt to the beltCell it occupies
     private HashMap<Integer, Point> indexLocations; //Maps each index on the belt to its point location
     
@@ -40,16 +39,18 @@ public class Belt implements EventConsumer{
         this.master = master;
         this.floor = floor;
         
-        //Begin and end points of the belt as specified in FloorPlan.png
-        this.begin = new Point(0,100);
+        //Begin and end points of the belt as specified in FloorPlanV3.png
+        this.begin = new Point(0,30);
         this.end = new Point(0,0);
-        
+        this.NUM_CELLS = 30;
+        //initialize cells on the visualizer
+        for(int i=0; i<NUM_CELLS; i++){
+            floor.updateItemAt(new Point(0,i), Cell.Type.BELT);
+        }
         canMove = true;
 
         //Belt length depends on begin and end point. Belt width set to 20 as shown in FloorPlan.png, number of cells set to 50
         BELT_LENGTH = (int) Math.abs(end.getY() - begin.getY());
-        BELT_WIDTH = 20;
-        NUM_CELLS = 50;
 
         cells = new HashMap<>();
         packages = new HashMap<>();
@@ -57,6 +58,28 @@ public class Belt implements EventConsumer{
         indexLocations = new HashMap<>();
 
         initializeBelt();
+    }
+    /**
+     *  Initialize the belt separated by beltCells. It will also initialize
+     *  indexLocations representing the location of each index. Will complete once
+     *  we decide on the length of the belt, the number of cells we want, etc.
+     */
+    private void initializeBelt(){
+
+        int cellHeight = BELT_LENGTH/NUM_CELLS;
+
+        //define indexLocations with keys NUM_CELLS (30) indices mapped to values top-left corner Point locations
+        for(int yLoc = 0, index = 0; yLoc < BELT_LENGTH-cellHeight; yLoc+= cellHeight, index++){
+            indexLocations.put(index, new Point(0,yLoc));
+        }
+
+        //define cells with keys ID (same as starting index) mapped to the newly created cell
+        for(int i = 0; i<=NUM_CELLS; i++){
+            Point location = indexLocations.get(i);
+            String ID = Integer.toString(i);
+            BeltCell cell = new BeltCell(cellHeight, i, location, ID);
+            cells.put(ID, cell);
+        }
     }
 
     /**
@@ -99,24 +122,24 @@ public class Belt implements EventConsumer{
 
 
     /**
-     * Adds a Package to the specified beltCell on the belt
-     * @param inventoryPackage: a Package of InventoryItems
+     * Adds a Bin to the specified beltCell on the belt
+     * @param inventoryBin: a Bin of InventoryItems
      * @param cell_id: String ID of the beltCell to be added to 
      */
-    public void addPackage(Package inventoryPackage, String cell_id){
-        String packageID = inventoryPackage.getID();
+    public void addPackage(Bin inventoryBin, String cell_id){
+        String packageID = inventoryBin.getID();
         
-        cells.get(cell_id).addPackage(inventoryPackage);
-        packages.put(packageID, inventoryPackage);
+        cells.get(cell_id).addPackage(inventoryBin);
+        packages.put(packageID, inventoryBin);
         packageCells.put(packageID, cells.get(cell_id));
     }
     
     /**
-     * Removes and returns the Package specified by packageID from the belt
-     * @param packageID: a Package of InventoryItems
+     * Removes and returns the Bin specified by packageID from the belt
+     * @param packageID: a Bin of InventoryItems
      * @return: package identified by packageID to that was removed
      */
-    public Package removePackage(String packageID){
+    public Bin removePackage(String packageID){
 
         packages.remove(packageID);
         packageCells.remove(packageID);
@@ -126,11 +149,11 @@ public class Belt implements EventConsumer{
 
     /**
      * @param packageID: string ID of a package 
-     * @return: Point where @param inventoryPackage resides
+     * @return: Point where @param inventoryBin resides
      */
     public Point getPackageLocation(String packageID){
         if(!packageCells.containsKey(packageID)){
-            System.out.println("Package "+packageID+"not found on the belt");
+            System.out.println("Bin "+packageID+"not found on the belt");
             return null;
         }else{
             return packageCells.get(packageID).getLocation();
@@ -146,30 +169,6 @@ public class Belt implements EventConsumer{
     public void updateStatus(){
     }
 
-    
-    /**
-     *  Initialize the belt separated by beltCells. It will also initialize  
-     *  indexLocations representing the location of each index. Will complete once 
-     *  we decide on the length of the belt, the number of cells we want, etc. 
-     */
-    private void initializeBelt(){
-        
-        int cellHeight = BELT_LENGTH/NUM_CELLS;
-        
-        //define indexLocations with keys NUM_CELLS (50) indices mapped to values top-left corner Point locations
-        for(int yLoc = 0, index = 0; yLoc < BELT_LENGTH-cellHeight; yLoc+= cellHeight, index++){
-            indexLocations.put(index, new Point(0,yLoc));
-        }
-        
-        //define cells with keys ID (same as starting index) mapped to the newly created cell
-        for(int i = 0; i<=NUM_CELLS; i++){
-            Point location = indexLocations.get(i);
-            String ID = Integer.toString(i);
-            BeltCell cell = new BeltCell(cellHeight, i, location, ID);
-            cells.put(ID, cell);
-        }
-    }
-
     /**
     * Belt is comprised of beltCells, each with an index indicating its location on the belt and
     * an id. 
@@ -183,12 +182,11 @@ public class Belt implements EventConsumer{
   
         private final String ID;
 
-        private final int width;
         private final int height;
 
         private boolean occupied;
 
-        private Package inventoryPackage;
+        private Bin inventoryBin;
 
         /**
          * @constructor: initializes a BeltCell with a designated height, initial index, initial location, and ID
@@ -200,8 +198,7 @@ public class Belt implements EventConsumer{
             this.index = index;
             this.ID = ID;
             this.height = height;
-            this.width = BELT_WIDTH;
-            this.inventoryPackage = null;
+            this.inventoryBin = null;
             occupied = false;
         }
 
@@ -212,29 +209,25 @@ public class Belt implements EventConsumer{
         public Point getLocation(){
             return location;
         }
-        
-        public int getWidth(){
-            return width;
-        }
-        
+
         public int getHeight(){
             return height;
         }
         
         /**
-         * @param inventoryPackage: Package to be added to this Cell
+         * @param inventoryBin: Bin to be added to this Cell
          */
-        public void addPackage(Package inventoryPackage){
-            this.inventoryPackage = inventoryPackage;
+        public void addPackage(Bin inventoryBin){
+            this.inventoryBin = inventoryBin;
             occupied = true;
         }
         
         /**
-         * @return: Package that was removed from this beltCell
+         * @return: Bin that was removed from this beltCell
          */
-        public Package removePackage(){
-            Package temp = inventoryPackage;
-            inventoryPackage = null;
+        public Bin removePackage(){
+            Bin temp = inventoryBin;
+            inventoryBin = null;
             occupied = false;
             return temp;
         }
@@ -246,9 +239,9 @@ public class Belt implements EventConsumer{
         /**
          * @return: The package occupying this cell, if there is one; Prints  a message and returns null otherwise
          */
-        public Package getPackage(){
+        public Bin getPackage(){
             try{
-                return inventoryPackage;
+                return inventoryBin;
             }catch(Exception e){
                 System.out.println("Cell "+ID+"does not contain a package");
             }
@@ -259,10 +252,18 @@ public class Belt implements EventConsumer{
          * the beginning
          */
         public void incrementIndex(){
-            if(index == NUM_CELLS -1){
-                index = 0;
+            if(index == 0){
+                index = BELT_LENGTH-1;
             }else{
-                index++;
+                floor.updateItemAt(new Point(0, index), Cell.Type.BELT);
+                index--;
+                if(inventoryBin == null){
+                    floor.updateItemAt(new Point(0, index), Cell.Type.BELT);
+                }else{
+                    floor.updateItemAt(new Point(0,index), Cell.Type.BINONBELT);
+                }
+
+
             }
             updateLocation();
         }

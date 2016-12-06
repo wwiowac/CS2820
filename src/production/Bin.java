@@ -6,16 +6,16 @@ package production;/*
 import java.util.HashMap;
 import java.util.ArrayList;
 
-public class Package{
+public class Bin {
     
     private String ID;
     private ArrayList<InventoryItem> contents;
     private HashMap<String, InventoryItem> items;   //Maps each InventoryItem in the package to its respective object
     
     /**
-     * @constructor: initializes a Package with an ArrayList of InventoryItems
+     * @constructor: initializes a Bin with an ArrayList of InventoryItems
      */
-    public Package(ArrayList<InventoryItem> contents, String ID){
+    public Bin(ArrayList<InventoryItem> contents, String ID){
         this.ID = ID;
         for(InventoryItem item : contents){
             items.put(item.getId(), item);

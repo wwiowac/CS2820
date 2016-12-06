@@ -63,7 +63,7 @@ public class Visualizer extends JApplet {
         g2.setColor(Color.BLACK);
         g2.drawString("Black: Belt", 10, 615);
         g2.drawString("Cyan: Charger", 10, 630);
-        g2.drawString("Pink: Package", 10, 645);
+        g2.drawString("Maroon: Packer", 10, 645);
         g2.drawString("Light Grey: Picker", 10, 660);
         g2.drawString("Blue: Robot", 10, 675);
 
@@ -92,11 +92,11 @@ public class Visualizer extends JApplet {
                     case CHARGER:
                         g2.setColor(Color.CYAN);
                         break;
-                    case PACKAGE:
-                        g2.setColor(Color.PINK);
-                        break;
                     case PICKER:
                         g2.setColor(Color.lightGray);
+                        break;
+                    case PACKER:
+                        g2.setColor(new Color(173,5,75));
                         break;
                     case ROBOT:
                         g2.setColor(Color.BLUE);
