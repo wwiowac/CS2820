@@ -165,7 +165,7 @@ public class Master implements EventConsumer {
     public static void main(String[] args) {
         Master master = new Master();
 
-        master.orders.scheduleRandomOrders(4, 100);
+        master.orders.scheduleRandomOrders(8, 100);
 
         master.simulate(5);
     }
