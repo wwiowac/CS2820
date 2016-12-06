@@ -64,7 +64,7 @@ public class Visualizer extends JApplet {
         g2.drawString("Black: Belt", 10, 615);
         g2.drawString("Cyan: Charger", 10, 630);
         g2.drawString("Pink: Package", 10, 645);
-        g2.drawString("Dark Grey: Picker", 10, 660);
+        g2.drawString("Light Grey: Picker", 10, 660);
         g2.drawString("Blue: Robot", 10, 675);
 
         g2.drawString("Yellow: Shelf", 150, 615);
@@ -72,6 +72,8 @@ public class Visualizer extends JApplet {
         g2.drawString("Red: Robot Raised Shelf", 150, 645);
         g2.drawString("Pink: Home", 150, 660);
         g2.drawString("Magenta: Home with Robot", 150, 675);
+
+        g2.drawString("Dark Grey: Bin on Belt", 400, 615);
 
         g2.clearRect(1000, 610, 100, 20);
         g2.drawString("Time: "+ this.time, 1010, 625);
@@ -85,6 +87,8 @@ public class Visualizer extends JApplet {
                     case BELT:
                         g2.setColor(Color.BLACK);
                         break;
+                    case BINONBELT:
+                        g2.setColor(Color.DARK_GRAY);
                     case CHARGER:
                         g2.setColor(Color.CYAN);
                         break;
@@ -92,7 +96,7 @@ public class Visualizer extends JApplet {
                         g2.setColor(Color.PINK);
                         break;
                     case PICKER:
-                        g2.setColor(Color.DARK_GRAY);
+                        g2.setColor(Color.lightGray);
                         break;
                     case ROBOT:
                         g2.setColor(Color.BLUE);
