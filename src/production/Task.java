@@ -22,13 +22,16 @@ public class Task {
         MoveBelt,
         OrderStatus_Submitted,
         OrderStatus_Completed,
-        PickItemFromShelf
+        PickItemFromShelf,
+        AddBinToBelt
     }
 
     public TaskType type;
     public Point location;
     public String itemsku;
     public Robot robot;
+    public Bin bin;
+    public InventoryItem item;
 
     Task(TaskType type) {
         this.type = type;
@@ -44,6 +47,12 @@ public class Task {
         this.itemsku = itemsku;
     }
 
+    Task(TaskType type, Point location, InventoryItem item){
+        this.type = type;
+        this.location = location;
+        this.item = item;
+    }
+
     Task(TaskType type, Robot robot) {
         this.type = type;
         this.robot = robot;
@@ -53,5 +62,11 @@ public class Task {
         this.type = type;
         this.robot = robot;
         this.location = location;
+    }
+
+    Task(TaskType type, Point location, Bin bin){
+        this.type = type;
+        this.location = location;
+        this.bin = bin;
     }
 }
