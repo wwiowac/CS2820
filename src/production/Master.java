@@ -14,6 +14,8 @@ public class Master implements EventConsumer {
 
     Floor floor;
     Belt belt;
+    Picker picker;
+    Packer packer;
     RobotScheduler robotscheduler;
     InventoryManagement inventory;
     Orders orders;
@@ -29,6 +31,8 @@ public class Master implements EventConsumer {
     Master() {
         EventQueue = new PriorityQueue<>(new scheduleOrdering());
         floor = new Floor(this);
+        picker = new Picker(this);
+        packer = new Packer(this);
         inventory = new InventoryManagement(floor);
         orders = new Orders(this);
         robotscheduler = new RobotScheduler(this, floor, inventory);
