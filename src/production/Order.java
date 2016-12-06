@@ -8,7 +8,7 @@ import java.util.Random;
  */
 public class Order {
     private Customer customer;
-    private ArrayList<InventoryItem> ordersItems;
+    private ArrayList<InventoryItem> ordersItems = new ArrayList<InventoryItem>();
 
     public Order(){
         Customer customer = generateCustomer();
