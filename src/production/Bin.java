@@ -3,55 +3,38 @@ package production;/*
 *
 * Defines a group of InventoryItems for Belt implementation
 */
-import java.util.HashMap;
 import java.util.ArrayList;
 
 public class Bin {
-    
-    private String ID;
+
+    private Order order;
     private ArrayList<InventoryItem> contents;
-    private HashMap<String, InventoryItem> items;   //Maps each InventoryItem in the package to its respective object
     
     /**
      * @constructor: initializes a Bin with an ArrayList of InventoryItems
      */
-    public Bin(ArrayList<InventoryItem> contents, String ID){
-        this.ID = ID;
-        for(InventoryItem item : contents){
-            items.put(item.getId(), item);
+    public Bin(Order order){
+        this.order = order;
+    }
+
+    private boolean isFinished(){
+        if(contents.size() != order.getOrdersItems().size()) {
+            return false;
         }
-    }
-    
-    public String getID(){
-        return ID;
-    }
-    
-    public ArrayList<InventoryItem> getContents(){
-        return contents;
+        for(InventoryItem item : order.getOrdersItems()){
+            if(!contents.contains(item)){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
      * Adds an InventoryItem to this package
      * @param item 
      */
-    public void addItem(InventoryItem item){
-        items.put(item.getId(), item);
-    }
-
-    /**
-     * Removes an item from this package
-     * @param id : String id of the InventoryItem to be removed
-     */
-    public void removeItem(String id){
-        items.remove(id);
-    }
-
-    /**
-     * Returns true if this package contains the specified InventoryItem; false otherwise
-     * @param id : String id of the InventoryItem in question
-     * @return boolean 
-     */
-    public boolean contains(String id){
-        return items.containsKey(id);
+    public boolean addItem(InventoryItem item){
+        contents.add(item);
+        return isFinished();
     }
 }

@@ -21,11 +21,6 @@ public class Floor {
     final Point pack = new Point(50, 40);
     final private Point pick = new Point(5, 28);
     final Point receivingDock = new Point(190, 0);
-    final Point highway1 = new Point(130, 85);
-    final Point highway2 = new Point(80, 65);
-    final Point highway3 = new Point(175, 65);
-    final Point highway4 = new Point(130, 25);
-
     /**
      * Constructor
      *
@@ -51,6 +46,8 @@ public class Floor {
     public Point getPicker() {
         return pick;
     }
+
+    public Cell getCell(Point p){return grid[p.x][p.y];}
 
     public Point getPacker() {
         return pack;
