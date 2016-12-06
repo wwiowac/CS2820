@@ -11,7 +11,7 @@ public class Belt implements EventConsumer{
     private Master master;
     private Floor floor;
 
-    private ArrayList<Bin> cells;
+    private Bin[] cells = new Bin[30];
 
     private boolean canMove;
     private int NUM_CELLS;
@@ -21,23 +21,24 @@ public class Belt implements EventConsumer{
         this.master = master;
         this.floor = floor;
 
-        cells = new ArrayList<>();
+        canMove = true;
 
-        NUM_CELLS = 30;
-        for(int i=0; i<NUM_CELLS; i++){
+        for(int i=0; i<cells.length; i++){
             floor.updateItemAt(new Point(0,i), Cell.Type.BELT);
         }
-        canMove = true;
+
+        Event spawnedEvent = new Event(new Task(Task.TaskType.MoveBelt), this);
+        master.scheduleEvent(spawnedEvent,1);
     }
 
     private void move(){
 
-        for(int i=1; i<cells.size(); i++){
-            cells.set(i-1, cells.get(i));
+        for(int i=1; i<cells.length; i++){
+            cells[i-1] = cells[i];
             floor.updateItemAt(new Point(0, i-1), floor.getCell(new Point(0, i)).type);
         }
-        cells.set(cells.size()-1, null);
-        floor.updateItemAt(new Point (0, cells.size()-1), Cell.Type.BELT);
+        cells[cells.length-1] = null;
+        floor.updateItemAt(new Point (0, cells.length-1), Cell.Type.BELT);
     }
 
     @Override
@@ -50,6 +51,7 @@ public class Belt implements EventConsumer{
                 break;
             case AddBinToBelt:
                 addBin(task.bin, task.location.y);
+                master.scheduleEvent(event,1);
                 break;
         }
     }
@@ -67,7 +69,7 @@ public class Belt implements EventConsumer{
     }
 
     public void addBin(Bin bin, int index){
-        cells.set(index, bin);
+        cells[index] = bin;
         floor.updateItemAt(new Point(0,index), Cell.Type.BINONBELT);
     }
 

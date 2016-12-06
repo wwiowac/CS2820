@@ -37,6 +37,8 @@ public class Orders implements EventConsumer {
     public void scheduleOrder(Order order, int time) {
         int ordernum = ordersStatus.size();
         ordersStatus.add("Order pending");
+        Event ev = new Event(new Task(Task.TaskType.CreateBinForOrder, order), master.picker, ordernum);
+        master.scheduleEvent(ev,time);
         for (InventoryItem i :order.getOrdersItems()) {
             Event e = new Event(new Task(Task.TaskType.BeginItemRetrieval, i.getId()), master, ordernum);
             master.scheduleEvent(e, time);

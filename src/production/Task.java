@@ -23,7 +23,8 @@ public class Task {
         OrderStatus_Submitted,
         OrderStatus_Completed,
         PickItemFromShelf,
-        AddBinToBelt
+        AddBinToBelt,
+        CreateBinForOrder
     }
 
     public TaskType type;
@@ -32,6 +33,7 @@ public class Task {
     public Robot robot;
     public Bin bin;
     public InventoryItem item;
+    public Order order;
 
     Task(TaskType type) {
         this.type = type;
@@ -68,5 +70,10 @@ public class Task {
         this.type = type;
         this.location = location;
         this.bin = bin;
+    }
+
+    Task(TaskType type, Order order){
+        this.order = order;
+        this.type = type;
     }
 }

@@ -21,7 +21,7 @@ public class Master implements EventConsumer {
     Orders orders;
 
     private PriorityQueue<ScheduledEvent> EventQueue;
-    Integer currentTime;
+    Integer currentTime = 0;
 
 
     /**
@@ -37,7 +37,6 @@ public class Master implements EventConsumer {
         orders = new Orders(this);
         robotscheduler = new RobotScheduler(this, floor, inventory);
         belt = new Belt(this, floor);
-        currentTime = 0;
     }
 
     /**
@@ -75,15 +74,15 @@ public class Master implements EventConsumer {
             case BeginItemRetrieval:
                 System.out.println("Time: " + this.currentTime.toString());
                 System.out.println("Beginning item retrieval");
-
-                Shelf s = inventory.getItemShelf(inventory.getItembySku(task.itemsku));
+                InventoryItem item = inventory.getItembySku(task.itemsku);
+                Shelf s = inventory.getItemShelf(item);
                 if(!s.isAvailable()) {
                     System.out.println("Item could not be retrieved: Shelf in use.");
                     event.addFirstTask(task, this);
                     scheduleEvent(event, 1);
                 } else {
                     s.setAvailable(false);
-                    Event spawnedevent = new Event(new Task(Task.TaskType.AvailableRobotRetrieveFromLocation, s.getLocation()), robotscheduler, event.ordernum);
+                    Event spawnedevent = new Event(new Task(Task.TaskType.AvailableRobotRetrieveFromLocation, s.getLocation(), item), robotscheduler, event.ordernum);
                     spawnedevent.addFirstTask(new Task(Task.TaskType.OrderStatus_Submitted), orders);
                     spawnedevent.addLastTask(new Task(Task.TaskType.OrderStatus_Submitted), orders);
                     spawnedevent.addLastTask(new Task(Task.TaskType.EventFinished), null);

@@ -41,7 +41,6 @@ public class RobotSchedulerTest {
                 Cell.Type.PICKER,
                 Cell.Type.BELT,
                 Cell.Type.BINONBELT,
-                Cell.Type.CHARGER,
                 Cell.Type.ROBOTHOME
         };
 

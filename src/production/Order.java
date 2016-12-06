@@ -11,7 +11,7 @@ public class Order {
     private ArrayList<InventoryItem> ordersItems = new ArrayList<InventoryItem>();
 
     public Order(){
-        Customer customer = generateCustomer();
+        customer = CustomerList.RandomCustomer();
         generateOrderItems();
 
     }
@@ -20,15 +20,12 @@ public class Order {
         return ordersItems;
     }
 
-
-    private Customer generateCustomer(){
-        return CustomerList.RandomCustomer();
-    }
-
     private void generateOrderItems(){
-        for(int i = 0; i < new Random().nextInt(5); i++) {
+        for(int i = 0; i < new Random().nextInt(4) + 1; i++) {
             InventoryItem item = InventoryList.catalog[new Random().nextInt(InventoryList.catalog.length)];
             ordersItems.add(item);
         }
     }
+
+
 }

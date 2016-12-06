@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Bin {
 
     private Order order;
-    private ArrayList<InventoryItem> contents;
+    private ArrayList<InventoryItem> contents = new ArrayList<>();
     
     /**
      * @constructor: initializes a Bin with an ArrayList of InventoryItems
@@ -36,5 +36,9 @@ public class Bin {
     public boolean addItem(InventoryItem item){
         contents.add(item);
         return isFinished();
+    }
+
+    public Order getOrder() {
+        return order;
     }
 }
