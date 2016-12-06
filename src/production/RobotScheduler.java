@@ -91,14 +91,17 @@ public class RobotScheduler implements EventConsumer {
                 for (int i=route.size()-1; i>=0; i--) {
                     event.addFirstTask(new Task(Task.TaskType.SpecificRobotToLocation, route.get(i)), task.robot);
                 }
-                master.scheduleEvent(event, 1);
+                master.scheduleEvent(event);
                 break;
             case EndItemRetrieval:
                 // After the robot has been returned home, let it do other work including start charging
                 chargingRobots.add(task.robot);
                 workingRobots.remove(task.robot);
-                event.addFirstTask(new Task(Task.TaskType.RobotCharge, task.robot), this);
-                master.scheduleEvent(event, 1);
+                // Let the order event progress
+                master.scheduleEvent(event);
+                // Spawn a new event to charge so order can complete independently
+                Event spawnedevent = new Event(new Task(Task.TaskType.RobotCharge, task.robot), this);
+                master.scheduleEvent(spawnedevent);
                 break;
             case RobotCharge:
                 task.robot.charge();
@@ -106,14 +109,13 @@ public class RobotScheduler implements EventConsumer {
                 if(task.robot.needsRecharge()) {
                     // keep charging
                     event.addFirstTask(new Task(Task.TaskType.RobotCharge, task.robot), this);
+                    master.scheduleEvent(event, 1);
                 } else {
                     // Done charging
                     System.out.println("Robot "+ task.robot +" done charging");
                     availableRobots.add(task.robot);
                     chargingRobots.remove(task.robot);
                 }
-
-                master.scheduleEvent(event, 1);
                 break;
         }
     }

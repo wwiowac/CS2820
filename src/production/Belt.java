@@ -13,6 +13,8 @@ public class Belt implements EventConsumer{
 
     private Bin[] cells = new Bin[30];
 
+    private boolean celloccupied = false;
+
     private boolean canMove;
     private int NUM_CELLS;
 
@@ -26,16 +28,17 @@ public class Belt implements EventConsumer{
         for(int i=0; i<cells.length; i++){
             floor.updateItemAt(new Point(0,i), Cell.Type.BELT);
         }
-
-        Event spawnedEvent = new Event(new Task(Task.TaskType.MoveBelt), this);
-        master.scheduleEvent(spawnedEvent,1);
     }
 
     private void move(){
-
+        celloccupied = false;
         for(int i=1; i<cells.length; i++){
             cells[i-1] = cells[i];
-            floor.updateItemAt(new Point(0, i-1), floor.getCell(new Point(0, i)).type);
+            Cell.Type nextcell = floor.getCell(new Point(0, i)).type;
+            if (nextcell == Cell.Type.BINONBELT) {
+                celloccupied = true;
+            }
+            floor.updateItemAt(new Point(0, i-1), nextcell);
         }
         cells[cells.length-1] = null;
         floor.updateItemAt(new Point (0, cells.length-1), Cell.Type.BELT);
@@ -45,9 +48,11 @@ public class Belt implements EventConsumer{
     public void handleTaskEvent(Task task, Event event) {
         switch (task.type){
             case MoveBelt:
-                move();
-                Event spawnedEvent = new Event(new Task(Task.TaskType.MoveBelt), this);
-                master.scheduleEvent(spawnedEvent,1);
+                if (celloccupied) {
+                    move();
+                    Event spawnedEvent = new Event(new Task(Task.TaskType.MoveBelt), this);
+                    master.scheduleEvent(spawnedEvent, 1);
+                }
                 break;
             case AddBinToBelt:
                 addBin(task.bin, task.location.y);
@@ -69,6 +74,11 @@ public class Belt implements EventConsumer{
     }
 
     public void addBin(Bin bin, int index){
+        if (!celloccupied) {
+            Event spawnedEvent = new Event(new Task(Task.TaskType.MoveBelt), this);
+            master.scheduleEvent(spawnedEvent, 1);
+            celloccupied = true;
+        }
         cells[index] = bin;
         floor.updateItemAt(new Point(0,index), Cell.Type.BINONBELT);
     }
