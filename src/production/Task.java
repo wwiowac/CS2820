@@ -15,15 +15,14 @@ public class Task {
         AvailableRobotRetrieveFromLocation,
         RaiseShelf,
         LowerShelf,
-        ShelfPickedUp,
         SpecificRobotPlotPath,
         SpecificRobotToLocation,
         RobotCharge,
         EventFinished,
-        UpdateFloorPosition,
         MoveBelt,
         OrderStatus_Submitted,
-        OrderStatus_Completed
+        OrderStatus_Completed,
+        PickItemFromShelf
     }
 
     public TaskType type;
