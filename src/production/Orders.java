@@ -21,22 +21,26 @@ public class Orders implements EventConsumer {
      */
     public void scheduleRandomOrders(int ordercount, int latesttime) {
         for (int i=0; i<ordercount; i++) {
-            InventoryItem item = InventoryList.catalog[new Random().nextInt(InventoryList.catalog.length)];
+            Order order = new Order();
             int time = new Random().nextInt(latesttime);
-            scheduleOrder(item, time);
+            scheduleOrder(order, time);
         }
     }
 
     /**
+     * @author - Kyle (changes made to implement multiple items in an order)
+     *
      * Order an item
-     * @param item
+     * @param order an order contains the customer(which contains name and address) and orderList of InventoryItems
      * @param time (from current)
      */
-    public void scheduleOrder(InventoryItem item, int time) {
+    public void scheduleOrder(Order order, int time) {
         int ordernum = ordersStatus.size();
         ordersStatus.add("Order pending");
-        Event e = new Event(new Task(Task.TaskType.BeginItemRetrieval, item.getId()), master, ordernum);
-        master.scheduleEvent(e, time);
+        for (InventoryItem i :order.getOrdersItems()) {
+            Event e = new Event(new Task(Task.TaskType.BeginItemRetrieval, i.getId()), master, ordernum);
+            master.scheduleEvent(e, time);
+        }
     }
 
     /**
