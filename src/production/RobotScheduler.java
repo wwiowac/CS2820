@@ -4,26 +4,31 @@ import java.awt.*;
 import java.util.*;
 
 /**
+ * Class that controls the robots
  * @author Jacob Roschen
  *
- * Class that controls the robots
  */
 public class RobotScheduler implements EventConsumer {
-    LinkedList<Robot> availableRobots = new LinkedList<>();
+    private LinkedList<Robot> availableRobots = new LinkedList<>();
     ArrayList<Robot> chargingRobots = new ArrayList<>();
     ArrayList<Robot> workingRobots = new ArrayList<>();
     // Used for path finding
-    PriorityQueue<Cell> openCells;
-    boolean closedCells[][];
+    private PriorityQueue<Cell> openCells;
+    private boolean closedCells[][];
 
     Master master;
     Floor floor;
-    InventoryManagement inventory;
 
-    RobotScheduler(Master m, Floor f, InventoryManagement i) {
+    /**
+     * Creates the RobotScheduler along with the robots it controls. By default, it creates 10 robots
+     * @author Jacob Roschen
+     *
+     * @param m Master Object
+     * @param f Floor Object
+     */
+    RobotScheduler(Master m, Floor f) {
         master = m;
         floor = f;
-        inventory = i;
         seedRobots(10);
     }
 
@@ -149,7 +154,7 @@ public class RobotScheduler implements EventConsumer {
      * @param next The cell you want to move to
      * @param hasShelf Does the robot have a shelf?
      */
-    void checkAndUpdateCost(Cell current, Cell next, boolean hasShelf) {
+    private void checkAndUpdateCost(Cell current, Cell next, boolean hasShelf) {
         if (!canMove(next, hasShelf) || closedCells[next.x][next.y]) return;
         int nextFinalCost = next.heuristicCost + current.finalCost + 1;
 

@@ -5,9 +5,6 @@ import java.util.*;
 
 public class Shelf {
 
-    private Master master;
-    private Floor floor;
-
     private UUID shelfId;
     private Point location;
     private boolean isAvailable;

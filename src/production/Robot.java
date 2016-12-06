@@ -22,6 +22,15 @@ public class Robot implements EventConsumer {
     private Shelf shelf;
     private int blockedCount;
 
+    /**
+     * Creates a new robot with the specified id, and location
+     * @author Jacob Roschen
+     *
+     * @param id Unique ID of the robot
+     * @param m Master Object
+     * @param f Floor object
+     * @param location Where the robot should be initially located
+     */
     public Robot(int id, Master m, Floor f, Point location) {
         this.id = id;
         this.chargeLevel = 100;
@@ -35,7 +44,6 @@ public class Robot implements EventConsumer {
     /**
      * Handles 'SpecificRobotToLocation', 'RaiseShelf', and 'LowerShelf'
      * If the robot cannot move to the specified location, it will reroute
-     *
      * @author Jacob Roschen
      *
      * @param task Task to complete
@@ -127,7 +135,6 @@ public class Robot implements EventConsumer {
 
     /**
      * Returns true if the robot has a charge less than 70%
-     *
      * @author Jacob Roschen
      *
      * @return if robot needs to be recharged
@@ -138,7 +145,6 @@ public class Robot implements EventConsumer {
 
     /**
      * Charge the robot 4x's faster than what it can move, and make sure that it can only be charged to 100%
-     *
      * @author Jacob Roschen
      */
     public void charge() {
@@ -149,7 +155,6 @@ public class Robot implements EventConsumer {
 
     /**
      * Returns the charge level of the robot
-     *
      * @author Jacob Roschen
      *
      * @return The current charge level
@@ -181,8 +186,8 @@ public class Robot implements EventConsumer {
 
     /**
      * Returns the current robot location
-     *
      * @author Jacob Roschen
+     *
      * @return The current robot location
      */
     public Point getLocation() {
@@ -192,12 +197,19 @@ public class Robot implements EventConsumer {
     /**
      * Returns true if the robot has a shelf
      * @author Jacob Roschen
-     * @return
+     *
+     * @return True if the robot currently has a shelf, false otherwise
      */
     public boolean hasShelf() {
         return shelf != null;
     }
 
+    /**
+     * Used for printing the current robot
+     * @author Jacob Roschen
+     *
+     * @return The ID of the robot as a string
+     */
     @Override
     public String toString() {
         return Integer.toString(id);

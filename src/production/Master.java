@@ -35,7 +35,7 @@ public class Master implements EventConsumer {
         packer = new Packer(this);
         inventory = new InventoryManagement(floor);
         orders = new Orders(this);
-        robotscheduler = new RobotScheduler(this, floor, inventory);
+        robotscheduler = new RobotScheduler(this, floor);
         belt = new Belt(this, floor);
     }
 

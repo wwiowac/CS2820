@@ -10,17 +10,10 @@ public class Floor {
     private Master master;
 
     //warehouse dimensions
-    static final int warehouseWidth = 60;
-    static final int warehouseDepth = 30;
+    private static final int warehouseWidth = 60;
+    private static final int warehouseDepth = 30;
     private Cell[][] grid;
 
-    //warehouse locations and names
-    final Point chargers = new Point(20, 0);
-    final Point shippingDock = new Point(10, 0);
-    final Point belt = new Point(20, 70);
-    final Point pack = new Point(50, 40);
-    final private Point pick = new Point(5, 28);
-    final Point receivingDock = new Point(190, 0);
     /**
      * Constructor
      *
@@ -38,36 +31,7 @@ public class Floor {
         }
     }
 
-    /**
-     * get methods for the various locations
-     *
-     * @return Point objects
-     */
-    public Point getPicker() {
-        return pick;
-    }
-
     public Cell getCell(Point p){return grid[p.x][p.y];}
-
-    public Point getPacker() {
-        return pack;
-    }
-
-    public Point getShippingDock() {
-        return shippingDock;
-    }
-
-    public Point getReceivingDock() {
-        return receivingDock;
-    }
-
-    public Point getCharger() {
-        return chargers;
-    }
-
-    public Point getBelt() {
-        return belt;
-    }
 
     /**
      * Returns a 2D array of Cells, which represent the state of the floor

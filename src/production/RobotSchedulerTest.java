@@ -10,7 +10,7 @@ public class RobotSchedulerTest {
     private Master master = new Master();
     private Floor floor = new Floor(master);
     private InventoryManagement im = new InventoryManagement(floor);
-    private RobotScheduler robotScheduler = new RobotScheduler(master, floor, im);
+    private RobotScheduler robotScheduler = new RobotScheduler(master, floor);
 
     @Test
     public void testCanMove() {
