@@ -33,7 +33,7 @@ public class Visualizer extends JApplet {
 
         frame.getContentPane().add("Center", this);
         frame.pack();
-        frame.setSize(new Dimension(1200, 700));
+        frame.setSize(new Dimension(1200, 720));
         repaint();
         frame.setVisible(true);
 
@@ -61,6 +61,7 @@ public class Visualizer extends JApplet {
 
         // Output the labels
         g2.setColor(Color.BLACK);
+        g2.clearRect(0, 601, 1200, 90);
         g2.drawString("Black: Belt", 10, 615);
         g2.drawString("Cyan: Charger", 10, 630);
         g2.drawString("Pink: Package", 10, 645);
@@ -73,7 +74,6 @@ public class Visualizer extends JApplet {
         g2.drawString("Pink: Home", 150, 660);
         g2.drawString("Magenta: Home with Robot", 150, 675);
 
-        g2.clearRect(1000, 610, 100, 20);
         g2.drawString("Time: "+ this.time, 1010, 625);
         g2.setPaint(Color.gray);
 
@@ -82,8 +82,11 @@ public class Visualizer extends JApplet {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
                 switch (grid[i][j].type) {
-                    case BELT:
+                    case EMPTYBELT:
                         g2.setColor(Color.BLACK);
+                        break;
+                    case OCCUPIEDBELT:
+                        g2.setColor(Color.red);
                         break;
                     case CHARGER:
                         g2.setColor(Color.CYAN);

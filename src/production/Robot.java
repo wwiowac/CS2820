@@ -198,6 +198,10 @@ public class Robot implements EventConsumer {
         return shelf != null;
     }
 
+    public Shelf getShelf() {
+        return shelf;
+    }
+
     @Override
     public String toString() {
         return Integer.toString(id);

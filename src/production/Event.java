@@ -6,17 +6,17 @@ import java.util.*;
 public class Event {
 
     private LinkedList<KeyValuePair<Task, EventConsumer>> EventTicket;
-    public int ordernum;
+    public Order order;
 
     public Event(Task task, EventConsumer handler) {
-        this(task, handler, -1);
+        this(task, handler, null);
     }
 
-    public Event(Task task, EventConsumer handler, int ordernum) {
+    public Event(Task task, EventConsumer handler, Order order) {
         EventTicket = new LinkedList<>();
         KeyValuePair<Task, EventConsumer> eventhandler = new KeyValuePair<>(task, handler);
         EventTicket.add(eventhandler);
-        this.ordernum = ordernum;
+        this.order = order;
     }
 
     public void doNextTask() {
@@ -27,6 +27,11 @@ public class Event {
     }
 
     public void addFirstTask(Task t, EventConsumer handler) {
+        KeyValuePair<Task, EventConsumer> eventhandler = new KeyValuePair<>(t, handler);
+        EventTicket.addFirst(eventhandler);
+    }
+
+    public void addFirstTasks(Task t, EventConsumer handler) {
         KeyValuePair<Task, EventConsumer> eventhandler = new KeyValuePair<>(t, handler);
         EventTicket.addFirst(eventhandler);
     }

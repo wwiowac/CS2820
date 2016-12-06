@@ -21,6 +21,11 @@ public class Package{
             items.put(item.getId(), item);
         }
     }
+
+    public Package(InventoryItem content) {
+        this.contents = new ArrayList<>();
+        this.contents.add(content);
+    }
     
     public String getID(){
         return ID;

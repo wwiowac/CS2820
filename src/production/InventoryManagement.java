@@ -2,7 +2,6 @@ package production;
 
 import java.awt.*;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class InventoryManagement {
 
@@ -60,6 +59,7 @@ public class InventoryManagement {
      *              description: adds an item to a specific shelf and indicates this addition in the currentInventory HashMap.
      */
     public void addItem(InventoryItem item, Shelf shelf) {
+        shelf.addItem(item);
         currentInventory.put(item, shelf);
     }
 

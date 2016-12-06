@@ -15,11 +15,11 @@ public class Floor {
     private Cell[][] grid;
 
     //warehouse locations and names
-    final Point chargers = new Point(20, 0);
+    final Point chargers = new Point(45, 0);
     final Point shippingDock = new Point(10, 0);
-    final Point belt = new Point(20, 70);
+    Point[] belt;
     final Point pack = new Point(50, 40);
-    final private Point pick = new Point(5, 28);
+    final private Point pick = new Point(1, 29);
     final Point receivingDock = new Point(190, 0);
     final Point highway1 = new Point(130, 85);
     final Point highway2 = new Point(80, 65);
@@ -68,8 +68,12 @@ public class Floor {
         return chargers;
     }
 
-    public Point getBelt() {
+    public Point[] getBelt() {
         return belt;
+    }
+
+    public void setBelt(Point[] beltarea) {
+        belt = beltarea;
     }
 
     /**
@@ -171,8 +175,9 @@ public class Floor {
      * @return True if the point is valid and empty
      */
     public boolean isEmptyLocation(Point p) {
-        if(p.x < 0 || p.x >= warehouseWidth || p.y < 0 || p.y >= warehouseDepth) return false;
-
+        if(p.x < 0 || p.x >= warehouseWidth || p.y < 0 || p.y >= warehouseDepth) {
+            return false;
+        }
         return (grid[p.x][p.y].type == Cell.Type.EMPTY);
     }
 }

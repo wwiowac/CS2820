@@ -7,11 +7,12 @@ import java.util.*;
  */
 public class Orders implements EventConsumer {
     Master master;
-    private ArrayList<String> ordersStatus;
+    private ArrayList<Order> orders;
+    private int ordersInProgress = 0;
 
     public Orders(Master master) {
         this.master = master;
-        ordersStatus = new ArrayList<>();
+        orders = new ArrayList<>();
     }
 
     /**
@@ -33,9 +34,10 @@ public class Orders implements EventConsumer {
      * @param time (from current)
      */
     public void scheduleOrder(InventoryItem item, int time) {
-        int ordernum = ordersStatus.size();
-        ordersStatus.add("Order pending");
-        Event e = new Event(new Task(Task.TaskType.BeginItemRetrieval, item.getId()), master, ordernum);
+        ordersInProgress++;
+        Order newOrder = new Order();
+        newOrder.status = Order.OrderStatus.OrderSubmitted;
+        Event e = new Event(new Task(Task.TaskType.BeginItemRetrieval, item.getId()), master, newOrder);
         master.scheduleEvent(e, time);
     }
 
@@ -48,11 +50,11 @@ public class Orders implements EventConsumer {
     public void handleTaskEvent(Task task, Event event) {
         switch (task.type) {
             case OrderStatus_Submitted:
-                ordersStatus.set(event.ordernum, "Order submitted");
+                event.order.status = Order.OrderStatus.OrderSubmitted;
                 master.scheduleEvent(event);
                 break;
             case OrderStatus_Completed:
-                ordersStatus.set(event.ordernum, "Order completed");
+                event.order.status = Order.OrderStatus.OrderCompleted;
                 master.scheduleEvent(event);
                 break;
         }

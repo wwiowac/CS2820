@@ -18,11 +18,13 @@ public class RobotScheduler implements EventConsumer {
 
     Master master;
     Floor floor;
+    Belt belt;
     InventoryManagement inventory;
 
-    RobotScheduler(Master m, Floor f, InventoryManagement i) {
+    RobotScheduler(Master m, Floor f, Belt b, InventoryManagement i) {
         master = m;
         floor = f;
+        belt = b;
         inventory = i;
         seedRobots(10);
     }
@@ -35,7 +37,7 @@ public class RobotScheduler implements EventConsumer {
      */
     private void seedRobots(int robotCount) {
         for (int i = 0; i <= robotCount; i++) {
-            Point position = new Point(20 + i, 0);
+            Point position = new Point(floor.chargers.x + i, floor.chargers.y);
             Robot robot = new Robot(i, master, floor, position);
             availableRobots.add(robot);
         }
@@ -73,6 +75,7 @@ public class RobotScheduler implements EventConsumer {
                 event.addFirstTask(new Task(Task.TaskType.LowerShelf), robot);
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, task.location), this); // Go back to the shelf area
                 // TODO: Do something with the picker, but most of the above will probably  be moved into other areas
+                event.addFirstTask(new Task(Task.TaskType.ItemToBelt, robot), belt);
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, floor.getPicker()), this);
                 event.addFirstTask(new Task(Task.TaskType.RaiseShelf), robot);
                 // Move back to its home
@@ -96,8 +99,9 @@ public class RobotScheduler implements EventConsumer {
                 // After the robot has been returned home, let it do other work including start charging
                 chargingRobots.add(task.robot);
                 workingRobots.remove(task.robot);
-                event.addFirstTask(new Task(Task.TaskType.RobotCharge, task.robot), this);
-                master.scheduleEvent(event, 1);
+                Event spawnedevent = new Event(new Task(Task.TaskType.RobotCharge, task.robot), this);
+                master.scheduleEvent(spawnedevent);
+                master.scheduleEvent(event);
                 break;
             case RobotCharge:
                 task.robot.charge();
@@ -105,14 +109,13 @@ public class RobotScheduler implements EventConsumer {
                 if(task.robot.needsRecharge()) {
                     // keep charging
                     event.addFirstTask(new Task(Task.TaskType.RobotCharge, task.robot), this);
+                    master.scheduleEvent(event, 1);
                 } else {
                     // Done charging
                     System.out.println("Robot "+ task.robot +" done charging");
                     availableRobots.add(task.robot);
                     chargingRobots.remove(task.robot);
                 }
-
-                master.scheduleEvent(event, 1);
                 break;
         }
     }

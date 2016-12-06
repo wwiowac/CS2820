@@ -22,7 +22,6 @@ public class Master implements EventConsumer {
     private PriorityQueue<ScheduledEvent> EventQueue;
     Integer currentTime;
 
-
     /**
      * Setup the simulation. This should only load thing that will be used in every simulation.
      * Simulation specific setup should be handled in the method initializing Master.
@@ -32,10 +31,11 @@ public class Master implements EventConsumer {
         floor = new Floor(this);
         inventory = new InventoryManagement(floor);
         orders = new Orders(this);
-        robotscheduler = new RobotScheduler(this, floor, inventory);
         belt = new Belt(this, floor);
+        robotscheduler = new RobotScheduler(this, floor, belt, inventory);
         visualizer = new Visualizer(floor);
         currentTime = 0;
+        scheduleEvent(new Event(new Task(Task.TaskType.MoveBelt), belt));
     }
 
     /**
@@ -81,10 +81,10 @@ public class Master implements EventConsumer {
                     scheduleEvent(event, 1);
                 } else {
                     s.setAvailable(false);
-                    Event spawnedevent = new Event(new Task(Task.TaskType.AvailableRobotRetrieveFromLocation, s.getLocation()), robotscheduler, event.ordernum);
-                    spawnedevent.addFirstTask(new Task(Task.TaskType.OrderStatus_Submitted), orders);
-                    spawnedevent.addLastTask(new Task(Task.TaskType.OrderStatus_Submitted), orders);
-                    spawnedevent.addLastTask(new Task(Task.TaskType.EventFinished), null);
+                    Event spawnedevent = new Event(new Task(Task.TaskType.OrderStatus_Submitted), orders, event.order);
+                    spawnedevent.addLastTask(new Task(Task.TaskType.AvailableRobotRetrieveFromLocation, s.getLocation()), robotscheduler);
+                    spawnedevent.addLastTask(new Task(Task.TaskType.OrderStatus_Completed), orders);
+                    spawnedevent.addLastTask(new Task(Task.TaskType.EventFinished), this);
                     scheduleEvent(spawnedevent);
                 }
                 break;

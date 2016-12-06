@@ -23,7 +23,8 @@ public class Task {
         UpdateFloorPosition,
         MoveBelt,
         OrderStatus_Submitted,
-        OrderStatus_Completed
+        OrderStatus_Completed,
+        ItemToBelt
     }
 
     public TaskType type;

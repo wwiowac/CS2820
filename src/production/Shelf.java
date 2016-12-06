@@ -1,6 +1,7 @@
 package production;
 
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Shelf {
@@ -11,6 +12,7 @@ public class Shelf {
     private UUID shelfId;
     private Point location;
     private boolean isAvailable;
+    private ArrayList<InventoryItem> items = new ArrayList<>();
 
     public Shelf(UUID shelfId, Point location){
         this.shelfId = shelfId;
@@ -50,5 +52,13 @@ public class Shelf {
      */
     public void setAvailable(boolean available) {
         isAvailable = available;
+    }
+
+    public void addItem(InventoryItem item) {
+        items.add(item);
+    }
+
+    public void removeItem(InventoryItem item) {
+        items.remove(item);
     }
 }
