@@ -9,6 +9,11 @@ public class Picker {
     public Picker(Order order, Package pack){
         this.order = order;
         this.pack = pack;
+        for(int x=1; x<3; x++){
+            for(int y= 27; y<29; y++){
+                master.floor.updateItemAt(new Point(x,y), Cell.Type.PICKER);
+            }
+        }
     }
 
     public boolean compareContents(){

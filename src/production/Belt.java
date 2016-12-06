@@ -22,6 +22,11 @@ public class Belt implements EventConsumer{
         this.floor = floor;
 
         cells = new ArrayList<>();
+
+        NUM_CELLS = 30;
+        for(int i=0; i<NUM_CELLS; i++){
+            floor.updateItemAt(new Point(0,i), Cell.Type.BELT);
+        }
         canMove = true;
     }
 
