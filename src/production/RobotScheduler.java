@@ -34,7 +34,7 @@ public class RobotScheduler implements EventConsumer {
      * @param robotCount Number of robots to initialize
      */
     void seedRobots(int robotCount) {
-        for (int i = 0; i <= robotCount; i++) {
+        for (int i = 0; i < robotCount; i++) {
             Point position = new Point(20 + i, 0);
             Robot robot = new Robot(i, master, floor, position);
             availableRobots.add(robot);
@@ -72,8 +72,9 @@ public class RobotScheduler implements EventConsumer {
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, robot.getLocation()), this);
                 event.addFirstTask(new Task(Task.TaskType.LowerShelf), robot);
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, task.location), this); // Go back to the shelf area
-                // TODO: Do something with the picker, but most of the above will probably  be moved into other areas
-                event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, floor.getPicker()), this);
+                // Tell the picker the item has arrived
+                event.addFirstTask(new Task(Task.TaskType.PickItemFromShelf, null, task.item), master.picker);
+                event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, master.picker.getDropoffLocation()), this);
                 event.addFirstTask(new Task(Task.TaskType.RaiseShelf), robot);
                 // Move back to its home
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, task.location), this);

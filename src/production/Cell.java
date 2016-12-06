@@ -68,7 +68,6 @@ public class Cell extends Point {
         PACKER,
         BELT,
         BINONBELT,
-        CHARGER,
         ROBOTRAISEDSHELF,
         ROBOTLOWEREDSHELF,
         ROBOTHOME,
