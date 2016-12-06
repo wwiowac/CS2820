@@ -8,6 +8,7 @@ import java.awt.event.WindowEvent;
 import static java.lang.Thread.sleep;
 
 /**
+ * Creates a new window that draws the floor
  * @author Jacob Roschen
  */
 
@@ -17,9 +18,9 @@ public class Visualizer extends JApplet {
 
     /**
      * Sets up the visualizer to startPoint drawing
+     * @author Jacob Roschen
      *
      * @param f The floor that the visualizer should draw
-     * @author Jacob Roschen
      */
     Visualizer(Floor f) {
         this.floor = f;
@@ -45,6 +46,12 @@ public class Visualizer extends JApplet {
         }
     }
 
+    /**
+     * Sets the time of the simulation, and repaints the floor
+     * @author Jacob Roschen
+     *
+     * @param time Current time of the simulation
+     */
     public void repaint(int time) {
         this.time = time;
         super.repaint();
@@ -52,9 +59,9 @@ public class Visualizer extends JApplet {
 
     /**
      * Draws the floor
+     * @author Jacob Roschen
      *
      * @param g
-     * @author Jacob Roschen
      */
     @Override
     public void paint(Graphics g) {
