@@ -9,9 +9,9 @@ import java.util.*;
  * Class that controls the robots
  */
 public class RobotScheduler implements EventConsumer {
-    private LinkedList<Robot> availableRobots = new LinkedList<>();
-    private ArrayList<Robot> chargingRobots = new ArrayList<>();
-    private ArrayList<Robot> workingRobots = new ArrayList<>();
+    LinkedList<Robot> availableRobots = new LinkedList<>();
+    ArrayList<Robot> chargingRobots = new ArrayList<>();
+    ArrayList<Robot> workingRobots = new ArrayList<>();
     // Used for path finding
     PriorityQueue<Cell> openCells;
     boolean closedCells[][];
@@ -33,7 +33,7 @@ public class RobotScheduler implements EventConsumer {
      *
      * @param robotCount Number of robots to initialize
      */
-    private void seedRobots(int robotCount) {
+    void seedRobots(int robotCount) {
         for (int i = 0; i <= robotCount; i++) {
             Point position = new Point(20 + i, 0);
             Robot robot = new Robot(i, master, floor, position);
@@ -125,7 +125,7 @@ public class RobotScheduler implements EventConsumer {
      * @param hasShelf Where you can move is determined by if the robot has a shelf
      * @return
      */
-    private boolean canMove(Cell c, boolean hasShelf) {
+    boolean canMove(Cell c, boolean hasShelf) {
         if (c.type == Cell.Type.ROBOT ||
                 c.type == Cell.Type.EMPTY ||
                 c.type == Cell.Type.ROBOTLOWEREDSHELF ||
@@ -146,7 +146,7 @@ public class RobotScheduler implements EventConsumer {
      * @param next The cell you want to move to
      * @param hasShelf Does the robot have a shelf?
      */
-    private void checkAndUpdateCost(Cell current, Cell next, boolean hasShelf) {
+    void checkAndUpdateCost(Cell current, Cell next, boolean hasShelf) {
         if (!canMove(next, hasShelf) || closedCells[next.x][next.y]) return;
         int nextFinalCost = next.heuristicCost + current.finalCost + 1;
 
@@ -167,7 +167,7 @@ public class RobotScheduler implements EventConsumer {
      * @param hasShelf Does the robot currently have a shelf?
      * @return An ArrayList of the coordinates that the robot needs to traverse
      */
-    private ArrayList<Point> findPath(Point start, Point end, boolean hasShelf) {
+    ArrayList<Point> findPath(Point start, Point end, boolean hasShelf) {
         ArrayList<Point> path = new ArrayList<>();
 
         Cell[][] grid = floor.getGrid();
