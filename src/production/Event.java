@@ -7,7 +7,6 @@ public class Event {
 
     private LinkedList<KeyValuePair<Task, EventConsumer>> EventTicket;
     public int ordernum;
-    KeyValuePair<Task, EventConsumer> last;
 
     public Event(Task task, EventConsumer handler) {
         this(task, handler, -1);
@@ -21,16 +20,9 @@ public class Event {
     }
 
     public void doNextTask() {
-        try {
-            KeyValuePair<Task, EventConsumer> tecpair = EventTicket.removeFirst();
-            last = tecpair;
-            if (tecpair.Value != null) {
-                tecpair.Value.handleTaskEvent(tecpair.Key, this);
-            }
-        } catch (Exception e) {
-            System.out.println(last.Key.type);
-            System.out.println(last.Value.getClass().getSimpleName());
-            throw new ArithmeticException("stuff");
+        KeyValuePair<Task, EventConsumer> tecpair = EventTicket.removeFirst();
+        if (tecpair.Value != null) {
+            tecpair.Value.handleTaskEvent(tecpair.Key, this);
         }
     }
 
