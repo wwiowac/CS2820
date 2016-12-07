@@ -84,6 +84,9 @@ public class RobotTest {
         Assert.assertEquals(Cell.Type.ROBOTRAISEDSHELF, m.floor.getCell(new Point(3, 5)).type);
     }
 
+    /**
+     * Tests to make sure that the robot will reroute if blocked for more than 2 times
+     */
     @Test
     public void testMoveBlockedWithReroute() {
         Robot r = new Robot(0, m, m.floor, new Point(3,3));
