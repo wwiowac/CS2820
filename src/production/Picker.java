@@ -8,17 +8,19 @@ import java.util.ArrayList;
  */
 public class Picker implements EventConsumer{
     private Master master;
+    private Floor floor;
     private Bin bin;
     private ArrayList<Bin> binList = new ArrayList<>();
     final private Point initialBinLocation = new Point(0, 28);
     final private Point dropoffLocation = new Point(3, 28);
 
 
-    public Picker(Master master){
+    public Picker(Master master, Floor floor) {
         this.master = master;
+        this.floor = floor;
         for(int x=1; x<3; x++){
             for(int y= 27; y<29; y++){
-                master.floor.updateItemAt(new Point(x,y), Cell.Type.PICKER);
+                floor.updateItemAt(new Point(x,y), Cell.Type.PICKER);
             }
         }
     }

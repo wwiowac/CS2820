@@ -5,7 +5,9 @@ import java.awt.*;
 /**
  * A simple description of the action that will take place, together
  * with the EventConsumer that will handle it. This is essentially
- * a struct
+ * a struct. Also may contain any information essential to the
+ * execution of the task.
+ * @author Wesley Weirather
  */
 public class Task {
 
@@ -25,6 +27,7 @@ public class Task {
         PickItemFromShelf,
         AddBinToBelt,
         CreateBinForOrder,
+        PackOrder,
         OrderPacked
     }
 

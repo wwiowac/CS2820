@@ -20,10 +20,10 @@ public class Visualizer extends JApplet {
      * Sets up the visualizer to startPoint drawing
      * @author Jacob Roschen
      *
-     * @param f The floor that the visualizer should draw
+     * @param floor The floor that the visualizer should draw
      */
-    Visualizer(Floor f) {
-        this.floor = f;
+    Visualizer(Floor floor) {
+        this.floor = floor;
 
         JFrame frame = new JFrame("Visualizer");
         frame.addWindowListener(new WindowAdapter() {
@@ -99,8 +99,11 @@ public class Visualizer extends JApplet {
                     case PICKER:
                         g2.setColor(Color.lightGray);
                         break;
-                    case PACKER:
+                    case IDLEPACKER:
                         g2.setColor(new Color(173,5,75));
+                        break;
+                    case PACKINGPACKER:
+                        g2.setColor(Color.GREEN);
                         break;
                     case ROBOT:
                         g2.setColor(Color.BLUE);
