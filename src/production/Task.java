@@ -24,7 +24,8 @@ public class Task {
         OrderStatus_Completed,
         PickItemFromShelf,
         AddBinToBelt,
-        CreateBinForOrder
+        CreateBinForOrder,
+        OrderPacked
     }
 
     public TaskType type;

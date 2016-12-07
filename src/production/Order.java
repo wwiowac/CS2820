@@ -19,6 +19,7 @@ public class Order {
     public ArrayList<InventoryItem> getOrdersItems() {
         return ordersItems;
     }
+    public Customer getCustomer(){return customer;}
 
     private void generateOrderItems(){
         for(int i = 0; i < new Random().nextInt(4) + 1; i++) {
