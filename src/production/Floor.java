@@ -136,4 +136,26 @@ public class Floor {
 
         return (grid[p.x][p.y].type == Cell.Type.EMPTY);
     }
+
+    /**
+     * Checks to see if the robot can move to the specified location. Is a helper method for checkAndUpdateCost()
+     * @author Jacob Roschen
+     *
+     * @param c The cell to check if one can move to
+     * @param hasShelf Where you can move is determined by if the robot has a shelf
+     * @return
+     */
+    boolean canMove(Point p, boolean hasShelf) {
+        Cell c = grid[p.x][p.y];
+        if (c.type == Cell.Type.ROBOT ||
+                c.type == Cell.Type.EMPTY ||
+                c.type == Cell.Type.ROBOTLOWEREDSHELF ||
+                c.type == Cell.Type.ROBOTRAISEDSHELF ||
+                c.type == Cell.Type.HOME ||
+                (c.type == Cell.Type.SHELF && !hasShelf)) {
+            return true;
+        }
+
+        return false;
+    }
 }

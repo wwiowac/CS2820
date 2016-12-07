@@ -25,13 +25,13 @@ public class RobotSchedulerTest {
         for (Cell.Type t : freeAreas) {
             Cell c = new Cell(0, 0);
             floor.updateItemAt(c, t);
-            Assert.assertEquals(true, robotScheduler.canMove(floor.getGrid()[0][0], true));
+            Assert.assertEquals(true, floor.canMove(new Point(0, 0), true));
         }
 
         // Can also move under shelves if the robot does not have a shelf
         Cell c = new Cell(0, 0);
         floor.updateItemAt(c, Cell.Type.SHELF);
-        Assert.assertEquals(true, robotScheduler.canMove(floor.getGrid()[0][0], false));
+        Assert.assertEquals(true, floor.canMove(new Point(0, 0), false));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class RobotSchedulerTest {
         for (Cell.Type t : nonFreeAreas) {
             Cell c = new Cell(0, 0);
             floor.updateItemAt(c, t);
-            Assert.assertEquals(false, robotScheduler.canMove(floor.getGrid()[0][0], true));
+            Assert.assertEquals(false, floor.canMove(new Point(0, 0), true));
         }
     }
 
@@ -119,5 +119,78 @@ public class RobotSchedulerTest {
         Assert.assertEquals(new Point(0, 3), route.get(4));
         Assert.assertEquals(new Point(0, 4), route.get(5));
         Assert.assertEquals(new Point(0, 5), route.get(6));
+    }
+
+    @Test
+    public void testRouteToSameLocation() {
+        Cell startingPoint = new Cell(0, 0);
+        Cell endingPoint = new Cell(0, 0);
+
+        ArrayList<Point> route = robotScheduler.findPath(startingPoint, endingPoint, true);
+
+        // The route should be null if there are no directions
+        Assert.assertEquals(0, route.size());
+    }
+
+    @Test
+    public void testGetNextRobot() {
+        // Use all of the current robots
+        int numRobots = robotScheduler.availableRobots.size();
+        for(int i = 0; i < numRobots; i++) {
+            Robot r = robotScheduler.getNextRobot();
+            // Make sure that the returned robot is the first one
+            Assert.assertEquals(Integer.toString(i), r.toString());
+        }
+
+        Robot emptyRobot = robotScheduler.getNextRobot();
+        Assert.assertNull(emptyRobot);
+    }
+
+    @Test
+    public void testEndItemRetrieval() {
+        Robot robot = robotScheduler.getNextRobot();
+        Assert.assertEquals(1, robotScheduler.workingRobots.size());
+
+        // End the item retrieval
+        Task t = new Task(Task.TaskType.EndItemRetrieval, robot, null);
+        robotScheduler.handleTaskEvent(t, new Event(t, robotScheduler));
+
+        Assert.assertEquals(0, robotScheduler.workingRobots.size());
+        Assert.assertEquals(1, robotScheduler.chargingRobots.size());
+    }
+
+    @Test
+    public void testRobotCharge() {
+        Robot robot = robotScheduler.getNextRobot();
+        robotScheduler.workingRobots.remove(robot);
+        robotScheduler.chargingRobots.add(robot);
+        // Used later to make sure the robot is available once its done charging
+        int numAvailableRobots = robotScheduler.availableRobots.size();
+
+        // Move the robot so the charge decreases
+        for(int i = 0; i < 5; i++) {
+            Point newPoint = (Point) robot.getLocation().clone();
+            newPoint.translate(0, 1);
+
+            Task taskMove = new Task(Task.TaskType.SpecificRobotToLocation, newPoint);
+            robot.handleTaskEvent(taskMove, new Event(taskMove, robot));
+        }
+        Assert.assertEquals(98.75, robot.chargeLevel(), 0);
+
+        // Start the recharging
+
+        Task rechargeTask = new Task(Task.TaskType.RobotCharge, robot);
+        robotScheduler.handleTaskEvent(rechargeTask, new Event(rechargeTask, robotScheduler));
+
+        Assert.assertEquals(99.75, robot.chargeLevel(), 0);
+
+        // Recharge again
+        Task rechargeTask2 = new Task(Task.TaskType.RobotCharge, robot);
+        robotScheduler.handleTaskEvent(rechargeTask2, new Event(rechargeTask2, robotScheduler));
+
+        Assert.assertEquals(100, robot.chargeLevel(), 0);
+        Assert.assertEquals(0, robotScheduler.chargingRobots.size());
+        Assert.assertEquals(numAvailableRobots + 1, robotScheduler.availableRobots.size());
+        Assert.assertEquals(0, robotScheduler.chargingRobots.size());
     }
 }
