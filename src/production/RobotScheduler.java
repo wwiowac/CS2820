@@ -26,9 +26,9 @@ public class RobotScheduler implements EventConsumer {
      * @param m Master Object
      * @param f Floor Object
      */
-    RobotScheduler(Master m, Floor f) {
-        master = m;
-        floor = f;
+    RobotScheduler(Master master, Floor floor) {
+        this.master = master;
+        this.floor = floor;
         seedRobots(10);
     }
 

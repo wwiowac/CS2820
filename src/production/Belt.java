@@ -47,7 +47,7 @@ public class Belt implements EventConsumer{
         floor.updateItemAt(new Point (0, cells.length-1), Cell.Type.BELT);
         //If a bin has reached the packer, schedule an OrderPacked event
         if(cells[11] != null){
-            Event event = new Event(new Task(Task.TaskType.OrderPacked, cells[11].getOrder()), master.packer);
+            Event event = new Event(new Task(Task.TaskType.PackOrder, cells[11].getOrder()), master.packer);
             master.scheduleEvent(event);
         }
     }

@@ -31,11 +31,11 @@ public class Robot implements EventConsumer {
      * @param f Floor object
      * @param location Where the robot should be initially located
      */
-    public Robot(int id, Master m, Floor f, Point location) {
+    public Robot(int id, Master master, Floor floor, Point location) {
         this.id = id;
         this.chargeLevel = 100;
-        this.master = m;
-        this.floor = f;
+        this.master = master;
+        this.floor = floor;
         this.location = location;
         this.floor.updateItemAt(location, Cell.Type.ROBOTHOME);
         this.blockedCount = 0;
