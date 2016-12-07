@@ -9,7 +9,7 @@ import java.util.*;
  *
  */
 public class RobotScheduler implements EventConsumer {
-    private LinkedList<Robot> availableRobots = new LinkedList<>();
+    LinkedList<Robot> availableRobots = new LinkedList<>();
     ArrayList<Robot> chargingRobots = new ArrayList<>();
     ArrayList<Robot> workingRobots = new ArrayList<>();
     // Used for path finding
@@ -61,27 +61,29 @@ public class RobotScheduler implements EventConsumer {
             case AvailableRobotRetrieveFromLocation:
                 master.printTime();
                 System.out.println("Sending a robot to [" + task.location.x + "," + task.location.y + "]");
-                Robot robot;
-                try {
-                    robot = availableRobots.removeFirst();
-                } catch (NoSuchElementException ex) {
-                    // No available robots to fetch the order
-                    System.out.println("No robots available: deferring");
+
+                Robot robot = getNextRobot();
+                if(robot == null) {
                     event.addFirstTask(task, this);
                     master.scheduleEvent(event, 1);
                     return;
                 }
 
-                // First go get the item, return to the picker, return the shelf, then finally go back home (Reverse order)
+                // Finish the item retrieval
                 event.addFirstTask(new Task(Task.TaskType.EndItemRetrieval, robot, null), this);
+                // Direct the robot back to its home
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, robot.getLocation()), this);
+                // Lower the shelf
                 event.addFirstTask(new Task(Task.TaskType.LowerShelf), robot);
+                // Direct the robot and its shelf back to the shelf's home
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, task.location), this); // Go back to the shelf area
                 // Tell the picker the item has arrived
                 event.addFirstTask(new Task(Task.TaskType.PickItemFromShelf, null, task.item), master.picker);
+                // Direct the robot to the picker
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, master.picker.getDropoffLocation()), this);
+                // Tell the robot to get the shelf
                 event.addFirstTask(new Task(Task.TaskType.RaiseShelf), robot);
-                // Move back to its home
+                // Direct the robot to the shelf with the item
                 event.addFirstTask(new Task(Task.TaskType.SpecificRobotPlotPath, robot, task.location), this);
                 master.scheduleEvent(event);
                 break;
@@ -126,27 +128,6 @@ public class RobotScheduler implements EventConsumer {
     }
 
     /**
-     * Checks to see if the robot can move to the specified location. Is a helper method for checkAndUpdateCost()
-     * @author Jacob Roschen
-     *
-     * @param c The cell to check if one can move to
-     * @param hasShelf Where you can move is determined by if the robot has a shelf
-     * @return
-     */
-    boolean canMove(Cell c, boolean hasShelf) {
-        if (c.type == Cell.Type.ROBOT ||
-                c.type == Cell.Type.EMPTY ||
-                c.type == Cell.Type.ROBOTLOWEREDSHELF ||
-                c.type == Cell.Type.ROBOTRAISEDSHELF ||
-                c.type == Cell.Type.HOME ||
-                (c.type == Cell.Type.SHELF && !hasShelf)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Calculates the cost of the move from the current cell to the next one. Is a helper method for findPath()
      * @author Jacob Roschen
      *
@@ -155,7 +136,7 @@ public class RobotScheduler implements EventConsumer {
      * @param hasShelf Does the robot have a shelf?
      */
     private void checkAndUpdateCost(Cell current, Cell next, boolean hasShelf) {
-        if (!canMove(next, hasShelf) || closedCells[next.x][next.y]) return;
+        if (!floor.canMove(next, hasShelf) || closedCells[next.x][next.y]) return;
         int nextFinalCost = next.heuristicCost + current.finalCost + 1;
 
         boolean inOpen = openCells.contains(next);
@@ -239,5 +220,24 @@ public class RobotScheduler implements EventConsumer {
         }
 
         return path;
+    }
+
+    /**
+     * Gets the next available robot
+     * If the return value is null, then no free robots were available
+     * @author Jacob Roschen
+     *
+     * @return The next available robot, or null
+     */
+    Robot getNextRobot() {
+        try {
+            Robot r = availableRobots.removeFirst();
+            workingRobots.add(r);
+            return r;
+        } catch (NoSuchElementException ex) {
+            // No available robots to fetch the order
+            System.out.println("No robots available: deferring");
+            return null;
+        }
     }
 }

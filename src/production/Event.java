@@ -54,9 +54,13 @@ public class Event {
      */
     public Point removeCurrentDirections() {
         Point robotDestination = null;
-        while(this.EventTicket.getFirst().Key.type == Task.TaskType.SpecificRobotToLocation) {
-            robotDestination = this.EventTicket.getFirst().Key.location;
-            this.EventTicket.removeFirst();
+        try {
+            while (this.EventTicket.getFirst().Key.type == Task.TaskType.SpecificRobotToLocation) {
+                robotDestination = this.EventTicket.getFirst().Key.location;
+                this.EventTicket.removeFirst();
+            }
+        } catch (NoSuchElementException ex) {
+            // Do nothing
         }
         
         return robotDestination;

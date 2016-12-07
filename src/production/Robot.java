@@ -205,6 +205,26 @@ public class Robot implements EventConsumer {
     }
 
     /**
+     * Returns true if the robot is raised
+     * @author Jacob Roschen
+     *
+     * @return True if the robot currently is raised, false otherwise
+     */
+    public boolean isRaised() {
+        return isRaised;
+    }
+
+    /**
+     * Helps determine if the robot actually moved from the event
+     * @author Jacob Roschen
+     *
+     * @return the number of times the robot has been blocked in a row
+     */
+    public int getBlockedCount() {
+        return blockedCount;
+    }
+
+    /**
      * Used for printing the current robot
      * @author Jacob Roschen
      *
