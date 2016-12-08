@@ -9,7 +9,6 @@ public class Orders implements EventConsumer {
     Master master;
     private ArrayList<String> ordersStatus;
 
-    // constructor
     public Orders(Master master) {
         this.master = master;
         ordersStatus = new ArrayList<>();
