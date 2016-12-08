@@ -45,7 +45,13 @@ public class Belt implements EventConsumer{
         }
         cells[cells.length-1] = null;
         floor.updateItemAt(new Point (0, cells.length-1), Cell.Type.BELT);
-        //If a bin has reached the packer, schedule an OrderPacked event
+
+        //If a bin has reached the end, schedule an OrderStatus_Completed event
+        if(cells[0] != null){
+            Event event = new Event(new Task(Task.TaskType.OrderStatus_Completed, cells[0].getOrder()), this);
+            master.scheduleEvent(event, 1);
+        }
+        //If a bin has reached the packer, schedule an PackOrder event
         if(cells[11] != null){
             Event event = new Event(new Task(Task.TaskType.PackOrder, cells[11].getOrder()), master.packer);
             master.scheduleEvent(event);
@@ -71,6 +77,13 @@ public class Belt implements EventConsumer{
                 addBin(task.bin, task.location.y);
                 master.scheduleEvent(event,1);
                 System.out.println("New bin created for picker");
+                break;
+            case OrderStatus_Completed:
+                Order order = task.order;
+                Customer customer = order.getCustomer();
+                String name = customer.getName();
+                String address = customer.getAddress();
+                System.out.println(name + "'s" + " order has been completed and shipped to " + address);
                 break;
         }
     }

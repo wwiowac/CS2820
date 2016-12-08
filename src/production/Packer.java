@@ -42,7 +42,7 @@ public class Packer implements EventConsumer {
                 Order order = task.order;
                 Customer customer = order.getCustomer();
                 String name = customer.getName();
-                System.out.println(name + "'s" + " order has is being packaged and labeled");
+                System.out.println(name + "'s" + " order is being packaged and labeled");
                 Event spawnedevent = new Event(new Task(Task.TaskType.OrderPacked, task.order), this);
                 master.scheduleEvent(spawnedevent, 1);
                 showBusy();
